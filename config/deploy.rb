@@ -14,8 +14,8 @@ set :deploy_to, "/var/www/uppd"
 default_run_options[:pty] = true  # Must be set for the password prompt
                                   # from git to work
 
-set :repository, "git@github.com:user/repo.git"  # Your clone URL
-set :local_repository, "file://."
+set :repository, "https://github.com/hackforwesternmass/uppd.git"  # Your clone URL
+#set :local_repository, "file://."
 #set :deploy_via, :copy
 
 set :scm, :git
