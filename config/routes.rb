@@ -3,6 +3,9 @@ Uppd::Application.routes.draw do
 
   devise_for :admin_users, ActiveAdmin::Devise.config
 
+  resources :proceedings
+
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
@@ -52,7 +55,7 @@ Uppd::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => 'welcome#index'
+  #root :to => 'public/index.html'
 
   # See how all your routes lay out with "rake routes"
 
