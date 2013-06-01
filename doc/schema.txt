@@ -36,7 +36,10 @@ table: doc_page
        pagetext text
        wordcount integer
 
-# A grouping of pages. Useful for further annotation if they are specific to a particular person       
+# A grouping of pages.
+# Can represent the whole document, a single page or a set of pages.
+# Useful for further annotation if they are specific to a particular person,
+# or for tagging.     
 table: section
        id integer serial
        start_page_id
@@ -45,6 +48,5 @@ table: section
               
 # A set of user created tags for a document
 table: tags
-       filing_doc_id integer indexed
-       doc_page_id integer indexed default 0
+       section_id integer indexed
        tag char(20)
