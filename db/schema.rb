@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130601174604) do
+ActiveRecord::Schema.define(:version => 20130601193217) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -45,5 +45,59 @@ ActiveRecord::Schema.define(:version => 20130601174604) do
 
   add_index "admin_users", ["email"], :name => "index_admin_users_on_email", :unique => true
   add_index "admin_users", ["reset_password_token"], :name => "index_admin_users_on_reset_password_token", :unique => true
+
+  create_table "doc_pages", :force => true do |t|
+    t.integer  "filing_doc_id"
+    t.integer  "pagenumber"
+    t.text     "pagetext"
+    t.integer  "wordcount"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  create_table "filing_docs", :force => true do |t|
+    t.integer  "filing_id"
+    t.text     "url"
+    t.integer  "pagecount"
+    t.string   "doctype"
+    t.string   "filetype"
+    t.string   "sha1hash"
+    t.string   "status"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "filings", :force => true do |t|
+    t.integer  "proceeding_id"
+    t.string   "filing_type"
+    t.integer  "source_id"
+    t.datetime "recv_date"
+    t.datetime "posting_date"
+    t.boolean  "exparte"
+    t.string   "author"
+    t.string   "lawfirm"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  create_table "proceedings", :force => true do |t|
+    t.string   "number"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "sections", :force => true do |t|
+    t.integer  "start_page"
+    t.integer  "end_page"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "tags", :force => true do |t|
+    t.integer  "doc_page_id"
+    t.string   "tag"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
 
 end
