@@ -1,0 +1,21 @@
+<h1>Listing proceedings</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @proceedings.each do |proceeding| %>
+  <tr>
+    <td><%= link_to 'Show', proceeding %></td>
+    <td><%= link_to 'Edit', edit_proceeding_path(proceeding) %></td>
+    <td><%= link_to 'Destroy', proceeding, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Proceeding', new_proceeding_path %>

@@ -1,0 +1,21 @@
+<h1>Listing doc_pages</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @doc_pages.each do |doc_page| %>
+  <tr>
+    <td><%= link_to 'Show', doc_page %></td>
+    <td><%= link_to 'Edit', edit_doc_page_path(doc_page) %></td>
+    <td><%= link_to 'Destroy', doc_page, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Doc page', new_doc_page_path %>
