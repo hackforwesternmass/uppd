@@ -8,6 +8,7 @@ table: proceeding
 # A filing represents a communication from a law firm, prisoner, or other interested party in the proceeding
 table: filing
        id integer serial
+       proceeding_id integer
        filing_type enum("comment", "filing")
        source_id integer #?
        recv_date datetime
@@ -31,6 +32,7 @@ table: filing_doc
 table: doc_page
        id integer serial
        filing_doc_id
+       pagenumber integer
        pagetext text
        wordcount integer
 
