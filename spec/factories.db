@@ -1,0 +1,5 @@
+FactoryGirl.define do
+  factory :proceedings do
+    sequence(:number)  { |n| "Proceeding #{n}" }
+  end
+end
