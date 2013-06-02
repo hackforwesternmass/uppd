@@ -10,6 +10,7 @@ from sys import exit, stderr
 import json
 import re
 import urllib2
+import psycopg2
 from bs4 import BeautifulSoup
 
 import pprint
@@ -39,35 +40,37 @@ for fccid in ["5507721128", "5507719820", "5507719590"]:
             urllib2.urlopen(
                 'http://apps.fcc.gov/ecfs/comment/view?id='+ fccid).read())
 
+    # All the fields seemed to be wrapped in divs of class wwgrp
     fields = filter(lambda tag: 'class' in tag.attrs and 'wwgrp' in tag['class'],
             soup.find_all('div'))
 
-    """html = re.sub(newline_characters, '', html)
-    html = re.sub(proceeding_number, r'\1', html)
-    html = re.sub(document_link, r'\1: \2 ', html)
-    html = re.sub(html_tag, r'', html)
-    html = re.sub(repeated_space, r' ', html)
-    html = re.sub(word_colon, r'\1', html)
-
-
-    html = re.sub(proceeding_number, r'\1',
-            re.sub(html_tag, r'',
-            re.sub(repeated_space, r'\1',
-            re.sub(document_link, r'\1: \2\n',
-            html))))"""
-
     filing = {}
+    filing_docs = {}
     for field in fields:
+        # Each div consists of two spans. The first contains a label with the
+        # name of the field in it. The second contains various content:
+        # usually just text, but sometimes links (in the case of documents or
+        # a div (in the case of an address)
         if ('class' in field.span.attrs and 'wwlbl' in field.span['class'] and
                 field.span.label.string.strip()[:-1] in db_field):
-            print field.find_all('span')[1]
+            # Second span: content
+            content_span = field.find_all('span')[1]
             if ('View Filing' in field.span.label.string.strip() and
-                    field.find_all('span')[1].a):
+                    content_span.a):
                 # Add a new filing doc
                 filing_docs[re.sub(document_link, r'\1',
-                    field.find_all('span')[1].a['href'])] = {
+                    content_span.a['href'])] = {
+                            'url': content_span.a['href'],
+                            'pagecount': re.sub(r'\D+', '',
+                                ''.join(content_span.a.stripped_strings)),
+                            'status': 'new'
+                            }
+                    # TODO: prepare a filing_doc db entry
+            # Not a link:
+            else:
+                filing[db_field[field.span.label.string.strip()[:-1]]] = '\n'.join(
+                        content_span.stripped_strings)
 
-#            filing[field.span.string.strip()[:-1]] = field.span.next_sibling.string.strip()
-    print filing
-    print '--------------------------------------'
+        # TODO: insert/update filing, doc, proceeding in DB
+
 
