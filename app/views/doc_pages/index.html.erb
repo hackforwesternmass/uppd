@@ -1,13 +1,8 @@
 <% provide(:title, 'Filing Documents') %>
+
+<%= render 'doc_pages/search' %>
+<hr>
 <h1>Listing doc_pages</h1>
-
-<%= form_tag doc_pages_path, :method => :get do %>
-<p>
-  <%= text_field_tag :search, params[:search] %>
-  <%= submit_tag "Search", :pagetext => nil %>
-</p>
-<% end %>
-
 
 <table>
   <tr>
