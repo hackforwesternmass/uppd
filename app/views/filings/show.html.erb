@@ -1,14 +1,12 @@
-<div class="row">
-	<div class="large-12 columns">
-		<%= @filing.author %>
-		<hr>
-		<%= @filing.recv_date %>
-		<hr>
-		<%= link_to 'Edit', edit_filing_path(@filing) %> |
-		<%= link_to 'Back', filings_path %>
-	</div>
-</div>
 
-<%= content_for :sidebar do %>
-	<p>sidebar, from filing show</p>
+<%= @filing.author %>
+<hr>
+<%= @filing.recv_date %>
+<hr>
+<%= link_to 'Edit', edit_filing_path(@filing) %> |
+<%= link_to 'Back', filings_path %>
+
+<%= content_for :sidebar_right do %>
+	<h2>Author</h2>
+	<%= @filing.author %>
 <% end %>
