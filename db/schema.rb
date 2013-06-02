@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130602032416) do
+ActiveRecord::Schema.define(:version => 20130602140246) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(:version => 20130602032416) do
     t.string   "status"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "fcc_id"
   end
 
   create_table "filings", :force => true do |t|
@@ -78,6 +79,20 @@ ActiveRecord::Schema.define(:version => 20130602032416) do
     t.string   "lawfirm"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+    t.integer  "fcc_id"
+    t.string   "fcc_num"
+    t.boolean  "business_imp"
+    t.string   "applicant"
+  end
+
+  create_table "locations", :force => true do |t|
+    t.integer  "section_id"
+    t.string   "state"
+    t.string   "county"
+    t.string   "twon"
+    t.string   "zip"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "pages", :force => true do |t|
@@ -96,8 +111,9 @@ ActiveRecord::Schema.define(:version => 20130602032416) do
   create_table "sections", :force => true do |t|
     t.integer  "start_page"
     t.integer  "end_page"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+    t.integer  "filing_doc_id"
   end
 
   create_table "taggings", :force => true do |t|

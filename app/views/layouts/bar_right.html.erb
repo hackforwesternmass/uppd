@@ -24,16 +24,18 @@
 
   <%= render 'shared/menu' %>
 
-      
+
   <div class="row">
-    <div class="large-4 columns">
-      <%= render 'doc_pages/search' %>
-    </div>
-    <div class="large-8 columns">
+    <div class="large-7 columns push-3">
       <%= yield %>
     </div>
+    <div class="large-2 columns push-3">
+      <%= yield :sidebar_right %>
+    </div>
+    <div class="large-3 columns pull-9">
+      <%= render 'doc_pages/search' %>
+    </div>
   </div>
-  
 
   <%= render 'shared/footer' %>
 
