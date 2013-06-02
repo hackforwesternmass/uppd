@@ -4,3 +4,14 @@
 		color: #fff;
 	}
 }
+
+$topbar-bg:#111;
+.full.menu{
+	background:$topbar-bg;
+	*{
+		color: #fff
+	}
+	.top-bar{
+		margin-bottom:0;
+	}
+}
