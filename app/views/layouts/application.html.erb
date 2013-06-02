@@ -24,22 +24,10 @@
 
   <%= render 'shared/menu' %>
 
-  <div class="row">
-    <div class="large-4 columns">
-      <%= render 'shared/sidebar' %>
-    </div>
-    <div class="large-8 columns">
-      <h2>body yield</h2>
-      <%= yield %>
-
-      <p>Vivamus mollis ullamcorper aliquet. Integer massa eros, dictum sit amet iaculis a, sodales in massa. Duis sodales gravida nisl a venenatis. Nullam sed odio risus. Nullam luctus dignissim lectus non luctus. Aliquam pretium orci et lorem ullamcorper venenatis. Curabitur eu molestie libero. Mauris id tortor nibh, id ultrices neque. Nunc quis nisi sit amet tellus cursus fermentum at sed augue. Donec suscipit ultricies nulla vel feugiat. Vestibulum lectus tortor, semper eget tincidunt quis, vestibulum ac sapien. In rutrum blandit risus, vel eleifend erat fermentum vel. Ut nec lacus urna.</p>
-      <p>Vivamus mollis ullamcorper aliquet. Integer massa eros, dictum sit amet iaculis a, sodales in massa. Duis sodales gravida nisl a venenatis. Nullam sed odio risus. Nullam luctus dignissim lectus non luctus. Aliquam pretium orci et lorem ullamcorper venenatis. Curabitur eu molestie libero. Mauris id tortor nibh, id ultrices neque. Nunc quis nisi sit amet tellus cursus fermentum at sed augue. Donec suscipit ultricies nulla vel feugiat. Vestibulum lectus tortor, semper eget tincidunt quis, vestibulum ac sapien. In rutrum blandit risus, vel eleifend erat fermentum vel. Ut nec lacus urna.</p>
-    </div>
-  </div>
+  <%= render 'shared/body' %>
 
   <%= render 'shared/footer' %>
 
-    
     <%= javascript_include_tag "application" %>
   </body>
 </html>
