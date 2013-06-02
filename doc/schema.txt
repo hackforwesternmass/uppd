@@ -8,12 +8,16 @@ table: proceeding
 # A filing represents a communication from a law firm, prisoner, or other interested party in the proceeding
 table: filing
        id integer serial
-       proceeding_id integer
-       filing_type enum("comment", "filing")
-       source_id integer #?
+       proceeding_id integer references proceeding.id
+       filing_type char(20)
+       source_id integer #? (yeah, what? --jhills)
+       fcc_id char(15)  # fcc file identifier
+       fcc_num          # "DA/FCC Number"
        recv_date datetime
        posting_date datetime
-       exparte char(1)
+       exparte boolean
+       business_imp boolean
+       applicant
        author
        lawfirm
        
@@ -21,11 +25,11 @@ table: filing
 table: filing_doc
        id integer serial
        filing_id integer references filing.id
-       url text             #set by rss parser
-       pagecount  integer
-       doctype  enum("comment", "filing")  #useful?
-       filetype enum("pdf") #updated after downloading file
-       sha1hash char(160)
+       fcc_id char(15)      # set by initial parser
+       url text             # set by initial parser
+       pagecount  integer   # set by initial parser
+       filetype enum("pdf") # updated after downloading file
+       sha1hash char(160)   # for persistence checking/logic
        status enum("new", "downloaded", "extracted")
 
 # A page of a document, extracted from the PDF
@@ -42,11 +46,32 @@ table: doc_page
 # or for tagging.     
 table: section
        id integer serial
+       doc_id references filing_doc.id
        start_page integer
        end_page integer
 
-              
-# A set of user created tags for a document
-table: tags
-       section_id integer indexed
-       tag char(20)
+# Guessing as to which information to include
+table: location
+    id integer serial
+    section_id integer references section.id
+    state text  # enum?
+    county text
+    town text # number?
+    zip integer
+
+# A user-created tag
+table: tag
+       id integer serial
+       tag char(20) indexed
+
+# Each section has tags associated with it, one tag will (hopefully) be used
+# across many sections
+table: tag_section
+    tag_id integer references tag.id
+    section_id references section.id
+
+# UNCERTAIN as to the necessity here. It may be something they absolutely need.
+table: tag_filing
+    tag_id integer references tag.id
+    filing_id integer references filing.id
+

@@ -1,3 +1,17 @@
-body{
-	background: #fa0;
+.header, .footer{
+	background: #2c2c2c;
+	*{
+		color: #fff;
+	}
+}
+
+$topbar-bg:#111;
+.full.menu{
+	background:$topbar-bg;
+	*{
+		color: #fff
+	}
+	.top-bar{
+		margin-bottom:0;
+	}
 }

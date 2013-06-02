@@ -1,14 +1,22 @@
 Uppd::Application.routes.draw do
   resources :pages
 
+  root :to => 'pages#show', :id => 1
+
+  match '/documents' => 'doc_pages#index'
+
+  resources :proceedings
+
+  resources :filings
+  
+  resources :doc_pages
+
+  match '/contact' => 'pages#show', :id => 2
 
   ActiveAdmin.routes(self)
 
   devise_for :admin_users, ActiveAdmin::Devise.config
 
-  resources :proceedings
-
-  resources :filings
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
