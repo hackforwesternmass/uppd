@@ -36,6 +36,7 @@ DocPage.delete_all
 			pagenumber: 2,
 			pagetext:  Faker::Lorem.paragraph(4),
 			wordcount: 200,
+			tag_list: "Test #{n}",
 		)
 	end
 end

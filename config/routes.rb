@@ -3,9 +3,13 @@ Uppd::Application.routes.draw do
 
   root :to => 'pages#show', :id => 1
 
+  match '/documents' => 'doc_pages#index'
+
   resources :proceedings
 
   resources :filings
+  
+  resources :doc_pages
 
   match '/contact' => 'pages#show', :id => 2
 
