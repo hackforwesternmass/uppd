@@ -1,6 +1,8 @@
 class FilingDocsController < ApplicationController
   # GET /filing_docs
   # GET /filing_docs.json
+  layout "bar_right"
+  
   def index
     @filing_docs = FilingDoc.all
 

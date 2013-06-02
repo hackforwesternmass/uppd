@@ -14,6 +14,7 @@
   </tr>
 
 <% @doc_pages.each do |doc_page| %>
+<%= debug doc_page %>
   <tr>
     <td><%= link_to "Doc #{doc_page.id}", doc_page %></td>
     <td><%= truncate(doc_page.pagetext, :length => 50) %></td>
