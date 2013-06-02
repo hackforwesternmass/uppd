@@ -1,0 +1,21 @@
+<h1>Listing filing_docs</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @filing_docs.each do |filing_doc| %>
+  <tr>
+    <td><%= link_to 'Show', filing_doc %></td>
+    <td><%= link_to 'Edit', edit_filing_doc_path(filing_doc) %></td>
+    <td><%= link_to 'Destroy', filing_doc, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Filing doc', new_filing_doc_path %>

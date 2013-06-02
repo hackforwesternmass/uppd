@@ -48,8 +48,8 @@ table: doc_page
 # or for tagging.     
 table: section
        id integer serial
-       start_page_id
-       end_page_id
+       start_page integer
+       end_page integer
 
               
 # A set of user created tags for a document
