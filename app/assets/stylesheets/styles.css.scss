@@ -3,6 +3,19 @@
 	*{
 		color: #fff;
 	}
+	a{
+		color:#fff;
+	}
+}
+.footer{
+	h1, h2, h3, h4, h5, h6{
+		margin:1em 0 1em 0;
+	}
+	a{
+		&:hover{
+			text-decoration:underline;
+		}
+	}
 }
 
 $topbar-bg:#111;
@@ -14,4 +27,8 @@ $topbar-bg:#111;
 	.top-bar{
 		margin-bottom:0;
 	}
+}
+
+a:hover{
+	background: none;
 }
