@@ -13,7 +13,7 @@
 //= require jquery
 //= require jquery-ui
 //= require jquery_ujs
-//= require foundation
+//= require foundation/foundation
 //= require bootstrap
 //= require_tree .
 
