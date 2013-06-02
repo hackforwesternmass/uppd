@@ -1,6 +1,8 @@
 class FilingsController < ApplicationController
   # GET /filings
   # GET /filings.json
+  layout "bar_right"
+
   def index
     @filings = Filing.all
 
@@ -14,7 +16,7 @@ class FilingsController < ApplicationController
   # GET /filings/1.json
   def show
     @filing = Filing.find(params[:id])
-
+    # layout 'customlayout'
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @filing }
