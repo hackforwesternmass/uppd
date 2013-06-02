@@ -1,4 +1,5 @@
 Uppd::Application.configure do
+  Sunspot.config.solr.url = 'http://localhost:8080/solr'
   # Settings specified here will take precedence over those in config/application.rb
 
   # Code is not reloaded between requests
