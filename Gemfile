@@ -14,15 +14,17 @@ gem 'faker', '1.0.1'
 gem 'therubyracer'
 gem 'rvm-capistrano'
 gem 'activeadmin'
+gem 'sunspot_rails'
 
 group :development, :test do
 	gem 'rspec-rails'
 	gem 'guard-rspec'
 	gem 'guard-spork', '1.4.1'
 	gem 'spork', '0.9.2'
-	  gem 'capistrano'
-	  gem 'capistrano-ext'
-	  gem 'rvm-capistrano'
+	gem 'capistrano'
+	gem 'capistrano-ext'
+	gem 'rvm-capistrano'
+	gem 'sunspot_solr'
 end
 
 group :test do 

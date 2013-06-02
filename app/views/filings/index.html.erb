@@ -2,20 +2,20 @@
 
 <table>
   <tr>
-    <th></th>
-    <th></th>
-    <th></th>
+    <th>Proceeding Id</th>
+    <th>Type</th>
+    <th>Receive Date</th>
+    <th>Author</th>
+    <th>View</th>
   </tr>
 
 <% @filings.each do |filing| %>
   <tr>
-    <td><%= link_to 'Show', filing %></td>
-    <td><%= link_to 'Edit', edit_filing_path(filing) %></td>
-    <td><%= link_to 'Destroy', filing, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td><%= filing.proceeding_id %></td>
+    <td><%= filing.filing_type %></td>
+    <td><%= filing.recv_date.strftime("%m/%d/%Y") %></td>
+    <td><%= filing.author %></td>
+    <td><%= link_to "Show", filing_path(filing) %></td>
   </tr>
 <% end %>
 </table>
-
-<br />
-
-<%= link_to 'New Filing', new_filing_path %>
