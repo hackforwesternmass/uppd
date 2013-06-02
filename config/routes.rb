@@ -6,6 +6,8 @@ Uppd::Application.routes.draw do
   resources :proceedings
 
   resources :filings
+  
+  resources :doc_pages
 
   match '/contact' => 'pages#show', :id => 2
 
