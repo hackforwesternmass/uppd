@@ -1,3 +1,3 @@
-ActiveAdmin.register Tag do
-  
+ActiveAdmin.register ActsAsTaggableOn::Tag, :as => "Tag" do
+   
 end
