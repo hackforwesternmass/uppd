@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130601193217) do
+ActiveRecord::Schema.define(:version => 20130601224055) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -80,6 +80,13 @@ ActiveRecord::Schema.define(:version => 20130601193217) do
     t.datetime "updated_at",    :null => false
   end
 
+  create_table "pages", :force => true do |t|
+    t.string   "title"
+    t.string   "body"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "proceedings", :force => true do |t|
     t.string   "number"
     t.datetime "created_at", :null => false
@@ -94,10 +101,10 @@ ActiveRecord::Schema.define(:version => 20130601193217) do
   end
 
   create_table "tags", :force => true do |t|
-    t.integer  "doc_page_id"
     t.string   "tag"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.integer  "section_id"
   end
 
 end

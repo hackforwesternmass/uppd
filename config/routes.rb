@@ -1,7 +1,18 @@
 Uppd::Application.routes.draw do
+  resources :pages
+
+  root :to => 'pages#show', :id => 1
+
+  resources :proceedings
+
+  resources :filings
+
+  match '/contact' => 'pages#show', :id => 2
+
   ActiveAdmin.routes(self)
 
   devise_for :admin_users, ActiveAdmin::Devise.config
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -52,7 +63,7 @@ Uppd::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => 'welcome#index'
+  #root :to => 'public/index.html'
 
   # See how all your routes lay out with "rake routes"
 

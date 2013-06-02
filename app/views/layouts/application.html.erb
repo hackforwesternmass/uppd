@@ -1,14 +1,35 @@
 <!DOCTYPE html>
-<html>
+<!--[if IE 8]> 				 <html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+
 <head>
-  <title>Uppd</title>
-  <%= stylesheet_link_tag    "application", :media => "all" %>
-  <%= javascript_include_tag "application" %>
-  <%= csrf_meta_tags %>
+	  <title>UPPD | <%= yield(:title) %></title>
+	  <%= stylesheet_link_tag    "application", :media => "all" %>
+	  <%= stylesheet_link_tag    "styles", :media => "all" %>
+	  <%= csrf_meta_tags %>
 </head>
 <body>
+	<%= render 'shared/menu' %>
+	<%= render 'shared/header' %>
 
-<%= yield %>
+	<div class="row">
+		<div class="large-12 columns">
+			<%= yield %>
+		</div>
+	</div>
 
+	<%= render 'shared/footer' %>
+
+  <script>
+  document.write('<script src=' +
+  ('__proto__' in {} ? 'javascripts/vendor/zepto' : 'javascripts/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  
+  <%= javascript_include_tag "application" %>
+	
+  <script>
+    $(document).foundation();
+  </script>
 </body>
 </html>
