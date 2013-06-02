@@ -17,9 +17,9 @@ table: filing
        posting_date datetime
        exparte boolean
        business_imp boolean
-       applicant
-       author
-       lawfirm
+       applicant string
+       author string
+       lawfirm string
        
 # A filing has one or or more associated documents
 table: filing_doc
@@ -54,10 +54,10 @@ table: section
 table: location
     id integer serial
     section_id integer references section.id
-    state text  # enum?
-    county text
-    town text # number?
-    zip integer
+    state string  # enum?
+    county string
+    town string # number?
+    zip string
 
 # A user-created tag
 table: tag
