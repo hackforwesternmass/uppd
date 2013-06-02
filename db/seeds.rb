@@ -14,7 +14,7 @@ FilingDoc.delete_all
 DocPage.delete_all
 30.times do |n|
 	Proceeding.create!(number: "Proceeding #{n}")
-	Filing.create!(
+	filingLast = Filing.create!(
 			proceeding_id: n,
 			filing_type: "Test",
 			source_id: n,
@@ -23,17 +23,19 @@ DocPage.delete_all
 			lawfirm: "Test #{n}",
 			exparte: 1,
 	)
-	FilingDoc.create!(
-		filing_id: n,
-		url: 'http://google.com',
-		pagecount: 2,
-		doctype: 'test',
-		filetype:  'pdf',
-	)
-	DocPage.create!(
-		filing_doc_id: n,
-		pagenumber: 2,
-		pagetext:  Faker::Lorem.paragraph(4),
-		wordcount: 200,
-	)
+	3.times do |d|
+		docLast = FilingDoc.create!(
+			filing_id: filingLast.id,
+			url: 'http://google.com',
+			pagecount: 2,
+			doctype: 'test',
+			filetype:  'pdf',
+		)
+		DocPage.create!(
+			filing_doc_id: docLast.id,
+			pagenumber: 2,
+			pagetext:  Faker::Lorem.paragraph(4),
+			wordcount: 200,
+		)
+	end
 end
