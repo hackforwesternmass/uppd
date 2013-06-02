@@ -1,0 +1,8 @@
+<h2>Search doc pages</h2>
+
+<%= form_tag doc_pages_path, :method => :get do %>
+<p>
+  <%= text_field_tag :search, params[:search] %>
+  <%= submit_tag "Search", :pagetext => nil %>
+</p>
+<% end %>
