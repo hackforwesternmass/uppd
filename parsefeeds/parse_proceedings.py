@@ -15,6 +15,103 @@ from datetime import datetime
 
 import pprint
 
+def get_proceeding_id(proceeding_number):
+    cursor = db_conn.cursor()
+    cursor.execute("SELECT id FROM proceedings WHERE number=%s", (proceeding_number,))
+    proceeding_id = None
+    try:
+        proceeding_result = cursor.fetchone()
+        if proceeding_result is None:
+            stderr.write("Proceeding number " + proceeding_number + " does not exist!!!\n")
+        proceeding_id = proceeding_result[0]
+    except ProgrammingError:
+        stderr.write("Proceeding number " + proceeding_number + " does not exist!!!\n")
+
+    cursor.close()
+    return proceeding_id
+
+
+def import_filing(filing):
+    filing['proceeding_id'] = get_proceeding_id(filing['proceeding.number'])
+    filing['created_at'] = datetime.now()
+    filing['updated_at'] = datetime.now()
+
+    cursor = db_conn.cursor()
+    cursor.execute("""INSERT INTO filings
+(applicant,
+lawfirm,
+author,
+filing_type,
+exparte,
+business_imp,
+recv_date,
+posting_date,
+fcc_num,
+address,
+created_at,
+updated_at,
+proceeding_id,
+source_id) VALUES
+(%(applicant)s,
+%(lawfirm)s,
+%(author)s,
+%(filing_type)s,
+%(exparte)s,
+%(business_imp)s,
+%(recv_date)s,
+%(posting_date)s,
+%(fcc_num)s,
+%(address)s,
+%(created_at)s,
+%(updated_at)s,
+%(proceeding_id)s,
+%(source_id)s);""", filing)
+    filing_id = cursor.fetchone()[0]
+
+    db_conn.commit()
+    cursor.close()
+
+    return filing_id
+
+
+def import_filing_docs(filing_id, filing_docs):
+    for fcc_id, doc in filing_docs.iteritems:
+        doc['filing_id'] = filing_id
+        doc['created_at'] = datetime.now()
+        doc['updated_at'] = datetime.now()
+
+       cursor = db_conn.cursor()
+       cursor.execute("""INSERT INTO filing_docs
+(filing_id,
+fcc_id,
+url,
+pagecount,
+status
+) VALUES
+(%(filing_id)s,
+%(fcc_id)s,
+%(url)s,
+%(pagecount)s,
+%(status)s);""", doc)
+
+       db_conn.commit()
+       cursor.close()
+
+# Column-specific content parsing for entry in the database
+def content_parse(column, content):
+    # Booleans are 'yes' or 'no' (with case variation)
+    if column in ['exparte', 'business_imp']:
+        return True if content.lower() == 'yes' else False
+    if column in ['recv_date', 'posting_date']:
+        try:
+            return datetime.strptime(re.sub(r'(\S+)\s.*', r'\1', content), '%Y-%m-%d').date()
+        except ValueError as e:
+            stderr.write('Incorrect date format: ' + content)
+            return content
+
+    return content
+
+
 # html name => db column
 db_field = {
         'Proceeding Number': 'proceeding.number',
@@ -33,19 +130,6 @@ db_field = {
 
 db_conn = psycopg2.connect('dbname=uppd_prod user=uppd')
 
-# Column-specific content parsing for entry in the database
-def content_parse(column, content):
-    # Booleans are 'yes' or 'no' (with case variation)
-    if column in ['exparte', 'business_imp']:
-        return True if content.lower() == 'yes' else False
-    if column in ['recv_date', 'posting_date']:
-        try:
-            return datetime.strptime(re.sub(r'(\S+)\s.*', r'\1', content), '%Y-%m-%d').date()
-        except ValueError as e:
-            stderr.write('Incorrect date format: ' + content)
-            return content
-
-    return content
 
 # Compile regular expression search(es), as they're used over and over, for
 # performance.
@@ -94,9 +178,11 @@ for fccid in comment_ids:
                 db_column = db_field[field.span.label.string.strip()[:-1]]
                 filing[db_column] = content_parse(db_column,
                     '\n'.join(content_span.stripped_strings))
-            proceeding_num = filing['proceeding.number']
-            del filing['proceeding.number']
-            (filing['source_id'] = 'http://apps.fcc.gov/ecfs/comment/view?id=' +
-                    filing['fcc_id'])
+             (filing['source_id'] = 'http://apps.fcc.gov/ecfs/comment/view?id=' +
+             filing['fcc_id'])
 
+        filing_id = import_filing(filing)
+        import_filing_docs(filing_id, filing_docs)
 db_conn.close()
+
+
