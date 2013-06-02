@@ -15,17 +15,42 @@ from datetime import datetime
 
 import pprint
 
+# html name => db column
+db_field = {
+        'Proceeding Number': 'proceeding.number',
+        'Name of Filer': 'applicant',
+        'Lawfirm Name': 'lawfirm',
+        'Attorney/Author Name': 'author',
+        'View Filing': None,
+        'Type of Filing': 'filing_type',
+        'Exparte': 'exparte',
+        'Small Business Impact': 'business_imp',
+        'Date Received': 'recv_date',
+        'Date Posted': 'posting_date',
+        'DA/FCC Number': 'fcc_num',
+}
+
+db_default_value = {
+        'applicant': '',
+        'lawfirm': '',
+        'author': '',
+        'filing_type': '',
+        'exparte': False,
+        'business_imp': False,
+        'recv_date': datetime.now(),
+        'posting_date': datetime.now(),
+        'fcc_num': '',
+}
+
 def get_proceeding_id(proceeding_number):
     cursor = db_conn.cursor()
     cursor.execute("SELECT id FROM proceedings WHERE number=%s", (proceeding_number,))
     proceeding_id = None
-    try:
-        proceeding_result = cursor.fetchone()
-        if proceeding_result is None:
-            stderr.write("Proceeding number " + proceeding_number + " does not exist!!!\n")
-        proceeding_id = proceeding_result[0]
-    except ProgrammingError:
+    proceeding_result = cursor.fetchone()
+    if proceeding_result is None:
         stderr.write("Proceeding number " + proceeding_number + " does not exist!!!\n")
+    else:
+        proceeding_id = proceeding_result[0]
 
     cursor.close()
     return proceeding_id
@@ -37,6 +62,11 @@ def import_filing(filing):
     filing['updated_at'] = datetime.now()
 
     cursor = db_conn.cursor()
+
+    # For Postgres, default values to 'DEFAULT'
+    for column in db_field.values():
+        filing.setdefault(column, db_default_value.get(column, None))
+
     cursor.execute("""INSERT INTO filings
 (applicant,
 lawfirm,
@@ -47,11 +77,10 @@ business_imp,
 recv_date,
 posting_date,
 fcc_num,
-address,
 created_at,
 updated_at,
-proceeding_id,
-source_id) VALUES
+proceeding_id
+) VALUES
 (%(applicant)s,
 %(lawfirm)s,
 %(author)s,
@@ -61,12 +90,16 @@ source_id) VALUES
 %(recv_date)s,
 %(posting_date)s,
 %(fcc_num)s,
-%(address)s,
 %(created_at)s,
 %(updated_at)s,
-%(proceeding_id)s,
-%(source_id)s);""", filing)
-    filing_id = cursor.fetchone()[0]
+%(proceeding_id)s
+) RETURNING lastval()
+;""", filing)
+    filing_result = cursor.fetchone()
+    if filing_result is None:
+        stderr.write('filing id not returned\n')
+    else:
+        filing_id = filing_result[0]
 
     db_conn.commit()
     cursor.close()
@@ -75,27 +108,32 @@ source_id) VALUES
 
 
 def import_filing_docs(filing_id, filing_docs):
-    for fcc_id, doc in filing_docs.iteritems:
+    for fcc_id, doc in filing_docs.items():
         doc['filing_id'] = filing_id
         doc['created_at'] = datetime.now()
         doc['updated_at'] = datetime.now()
 
-       cursor = db_conn.cursor()
-       cursor.execute("""INSERT INTO filing_docs
+        cursor = db_conn.cursor()
+        cursor.execute("""INSERT INTO filing_docs
 (filing_id,
 fcc_id,
 url,
 pagecount,
-status
+status,
+created_at,
+updated_at
 ) VALUES
 (%(filing_id)s,
 %(fcc_id)s,
 %(url)s,
 %(pagecount)s,
-%(status)s);""", doc)
+%(status)s,
+%(created_at)s,
+%(updated_at)s
+);""", doc)
 
-       db_conn.commit()
-       cursor.close()
+        db_conn.commit()
+        cursor.close()
 
 # Column-specific content parsing for entry in the database
 def content_parse(column, content):
@@ -112,24 +150,7 @@ def content_parse(column, content):
     return content
 
 
-# html name => db column
-db_field = {
-        'Proceeding Number': 'proceeding.number',
-        'Name of Filer': 'applicant',
-        'Lawfirm Name': 'lawfirm',
-        'Attorney/Author Name': 'author',
-        'View Filing': None,
-        'Type of Filing': 'filing_type',
-        'Exparte': 'exparte',
-        'Small Business Impact': 'business_imp',
-        'Date Received': 'recv_date',
-        'Date Posted': 'posting_date',
-        'DA/FCC Number': 'fcc_num',
-        'Address': 'address',
-}
-
 db_conn = psycopg2.connect('dbname=uppd_prod user=uppd')
-
 
 # Compile regular expression search(es), as they're used over and over, for
 # performance.
@@ -178,11 +199,11 @@ for fccid in comment_ids:
                 db_column = db_field[field.span.label.string.strip()[:-1]]
                 filing[db_column] = content_parse(db_column,
                     '\n'.join(content_span.stripped_strings))
-             (filing['source_id'] = 'http://apps.fcc.gov/ecfs/comment/view?id=' +
-             filing['fcc_id'])
-
-        filing_id = import_filing(filing)
-        import_filing_docs(filing_id, filing_docs)
+            filing['source_id'] = 'http://apps.fcc.gov/ecfs/comment/view?id=' + fccid 
+        
+    pprint.pprint(filing)
+    filing_id = import_filing(filing)
+    import_filing_docs(filing_id, filing_docs)
 db_conn.close()
 
 
