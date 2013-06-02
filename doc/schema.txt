@@ -8,12 +8,16 @@ table: proceeding
 # A filing represents a communication from a law firm, prisoner, or other interested party in the proceeding
 table: filing
        id integer serial
-       proceeding_id integer
-       filing_type enum("comment", "filing")
-       source_id integer #?
+       proceeding_id integer references proceeding.id
+       filing_type char(20)
+       source_id integer #? (yeah, what? --jhills)
+       fcc_id char(15)  # fcc file identifier
+       fcc_num          # "DA/FCC Number"
        recv_date datetime
        posting_date datetime
-       exparte char(1)
+       exparte boolean
+       business_imp boolean
+       applicant
        author
        lawfirm
        
@@ -21,7 +25,9 @@ table: filing
 table: filing_doc
        id integer serial
        filing_id integer references filing.id
+       fcc_id char(15)
        url text             #set by rss parser
+       title text           #set by rss parser -- often not present!
        pagecount  integer
        doctype  enum("comment", "filing")  #useful?
        filetype enum("pdf") #updated after downloading file
