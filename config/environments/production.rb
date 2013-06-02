@@ -1,4 +1,5 @@
 Uppd::Application.configure do
+  Sunspot.config.solr.url = 'http://localhost:8080/solr'
   # Settings specified here will take precedence over those in config/application.rb
 
   # Code is not reloaded between requests
@@ -19,6 +20,8 @@ Uppd::Application.configure do
 
   # Generate digests for assets URLs
   config.assets.digest = true
+
+  config.assets.precompile += %w[active_admin.css active_admin.js styles.css]
 
   # Defaults to nil and saved in location specified by config.assets.prefix
   # config.assets.manifest = YOUR_PATH

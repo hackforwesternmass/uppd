@@ -1,14 +1,9 @@
+<% provide(:title, @page.title) %>
 <p id="notice"><%= notice %></p>
 
-<p>
-  <b>Title:</b>
-  <%= @page.title %>
-</p>
+<h2><%= @page.title %></h2>
 
-<p>
-  <b>Body:</b>
-  <%= @page.body %>
-</p>
+<%= simple_format @page.body %>
 
 
 <%= link_to 'Edit', edit_page_path(@page) %> |

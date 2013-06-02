@@ -1,5 +1,14 @@
-<p id="notice"><%= notice %></p>
+<div class="row">
+	<div class="large-12 columns">
+		<%= @filing.author %>
+		<hr>
+		<%= @filing.recv_date %>
+		<hr>
+		<%= link_to 'Edit', edit_filing_path(@filing) %> |
+		<%= link_to 'Back', filings_path %>
+	</div>
+</div>
 
-
-<%= link_to 'Edit', edit_filing_path(@filing) %> |
-<%= link_to 'Back', filings_path %>
+<%= content_for :sidebar do %>
+	<p>sidebar, from filing show</p>
+<% end %>

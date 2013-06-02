@@ -2,7 +2,10 @@ class DocPagesController < ApplicationController
   # GET /doc_pages
   # GET /doc_pages.json
   def index
-    @doc_pages = DocPage.all
+    @search = DocPage.solr_search do
+      fulltext params[:search]
+    end
+    @doc_pages = @search.results
 
     respond_to do |format|
       format.html # index.html.erb
