@@ -1,2 +1,0 @@
-http://apps.fcc.gov/ecfs/comment_search/rss?proceeding=12-375
-http://apps.fcc.gov/ecfs/comment_search/rss?proceeding=96-128
