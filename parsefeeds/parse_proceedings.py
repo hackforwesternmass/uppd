@@ -11,7 +11,7 @@ import re
 import urllib2
 import psycopg2
 from bs4 import BeautifulSoup
-from datetime import strptime
+from datetime import datetime
 
 import pprint
 
@@ -38,32 +38,25 @@ def content_parse(column, content):
     # Booleans are 'yes' or 'no' (with case variation)
     if column in ['exparte', 'business_imp']:
         return True if content.lower() == 'yes' else False
-    # TODO: date parsing
     if column in ['recv_date', 'posting_date']:
         try:
-            return strptime(content, "")
+            return datetime.strptime(re.sub(r'(\S+)\s.*', r'\1', content), '%Y-%m-%d').date()
         except ValueError as e:
             stderr.write('Incorrect date format: ' + content)
             return content
 
     return content
-#        return content.lower() == 
-    """
-        'recv_date',
-        'posting_date',
-        """
-
 
 # Compile regular expression search(es), as they're used over and over, for
 # performance.
 document_link = re.compile(r'.+id=(\d+).*')
 
 comment_ids = []
-with open('comment-ids.txt') as f:
-    comment_ids = f.readlines()
+for comment_id_file in ['comment-id-96-128.txt', 'comment-ids.txt']:
+    with open(comment_id_file) as f:
+        comment_ids.extend(f.readlines())
 
 comment_ids = map(lambda s: s.strip(), comment_ids)
-
 for fccid in comment_ids:
     soup = BeautifulSoup(
             urllib2.urlopen(
@@ -86,22 +79,24 @@ for fccid in comment_ids:
             content_span = field.find_all('span')[1]
             if ('View Filing' in field.span.label.string.strip() and
                     content_span.a):
-                # Add a new filing doc
-                doc_id = re.sub(document_link, r'\1',content_span.a['href'])
-                filing_docs[doc_id] = {
-                        'fcc_id': doc_id,
-                        'url': 'http://apps.fcc.gov/ecfs/document/view?id=' + doc_id, 
-                        'pagecount': re.sub(r'\D+', '',
-                                ''.join(content_span.a.stripped_strings)),
-                        'status': 'new'
-                            }
+                # Add a new filing doc for EACH link
+                for a in content_span.find_all('a'):
+                    doc_id = re.sub(document_link, r'\1',a['href'])
+                    filing_docs[doc_id] = {
+                            'fcc_id': doc_id,
+                            'url': 'http://apps.fcc.gov/ecfs/document/view?id=' + doc_id, 
+                            'pagecount': re.sub(r'\D+', '',
+                                ''.join(a.stripped_strings)),
+                            'status': 'new'
+                                }
             # Not a link:
             else:
                 db_column = db_field[field.span.label.string.strip()[:-1]]
                 filing[db_column] = content_parse(db_column,
                     '\n'.join(content_span.stripped_strings))
-
-        # TODO: insert/update filing, doc, proceeding in DB
-    print filing['recv_date']
+            proceeding_num = filing['proceeding.number']
+            del filing['proceeding.number']
+            (filing['source_id'] = 'http://apps.fcc.gov/ecfs/comment/view?id=' +
+                    filing['fcc_id'])
 
 db_conn.close()
