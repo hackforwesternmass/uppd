@@ -96,5 +96,7 @@ for fccid in comment_ids:
                     '\n'.join(content_span.stripped_strings))
             proceeding_num = filing['proceeding.number']
             del filing['proceeding.number']
+            (filing['source_id'] = 'http://apps.fcc.gov/ecfs/comment/view?id=' +
+                    filing['fcc_id'])
 
 db_conn.close()
