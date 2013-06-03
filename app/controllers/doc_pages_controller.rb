@@ -1,4 +1,6 @@
 class DocPagesController < ApplicationController
+  before_filter :authenticate_admin_user!, only: [:new, :create, :edit, :save]
+  
   # GET /doc_pages
   # GET /doc_pages.json
   def index
