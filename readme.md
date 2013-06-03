@@ -23,6 +23,11 @@ You can edit there.
 
 # Road map
 
+## Better editing of content
+ * Inline tagging of files
+ * Inline creation of Page info
+ * Croud source interface 
+
 ## Better search interface
 We are finlalizing some import work. As far as the display goes we are not sure what to show on the search pages but these are some of the thought.
 User clicks search.
