@@ -3,8 +3,22 @@ class DocPagesController < ApplicationController
   # GET /doc_pages.json
   def index
     @search = DocPage.solr_search do
-      fulltext params[:search]
+      fulltext params[:search] do
+          highlight :pagetext, :stored => true
+        end
+      facet :tag_list
+      paginate :per_page => 20
+       # tags, AND'd        
+      if params[:tag].present?
+        all_of do
+          params[:tag].each do |tag|
+            with(:tag_list, tag)
+          end
+        end
+      end
     end
+
+    @hits = @search.hits
     @doc_pages = @search.results
 
     respond_to do |format|
