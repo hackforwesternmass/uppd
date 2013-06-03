@@ -1,9 +1,10 @@
-<h2>Search doc pages</h2>
+<h2>Search</h2>
 
 <%= form_tag doc_pages_path, :method => :get do %>
 <p>
   <%= text_field_tag :search, params[:search] %>
   <%= submit_tag "Search", :pagetext => nil %>
+  <p>Search through the OCR results of filings.</p>
 </p>
 <% end %>
 
