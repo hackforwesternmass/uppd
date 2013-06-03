@@ -1,4 +1,6 @@
 class FilingsController < ApplicationController
+  before_filter :authenticate_admin_user!, only: [:new, :create, :edit, :save]
+
   # GET /filings
   # GET /filings.json
   layout "bar_right"

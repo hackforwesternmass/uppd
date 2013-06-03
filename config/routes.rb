@@ -1,15 +1,16 @@
 Uppd::Application.routes.draw do
-  resources :pages
+
+  devise_scope :admin_user do
+    resources :pages
+    resources :proceedings
+    resources :filings
+    resources :doc_pages
+end
 
   root :to => 'pages#show', :id => 1
 
   match '/documents' => 'doc_pages#index'
 
-  resources :proceedings
-
-  resources :filings
-  
-  resources :doc_pages
 
   match '/contact' => 'pages#show', :id => 2
 

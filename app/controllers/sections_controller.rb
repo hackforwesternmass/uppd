@@ -1,4 +1,6 @@
 class SectionsController < ApplicationController
+  before_filter :authenticate_admin_user!, only: [:new, :create, :edit, :save]
+
   # GET /sections
   # GET /sections.json
   def index

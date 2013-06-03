@@ -1,4 +1,6 @@
 class FilingDocsController < ApplicationController
+  before_filter :authenticate_admin_user!, only: [:new, :create, :edit, :save]
+
   # GET /filing_docs
   # GET /filing_docs.json
   layout "bar_right"

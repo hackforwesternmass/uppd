@@ -1,4 +1,6 @@
 class ProceedingsController < ApplicationController
+  before_filter :authenticate_admin_user!, only: [:new, :create, :edit, :save]
+
   # GET /proceedings
   # GET /proceedings.json
   def index
