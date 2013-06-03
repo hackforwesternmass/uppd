@@ -1,0 +1,40 @@
+<%
+facets_html = ''
+if not @search.nil?
+  
+  # check for existing states in query string
+  existing_state_facets = []
+  if params[:state].present?
+    existing_state_facets = params[:state]
+  end
+
+  facet_links_off = ''
+  facet_links_on = ''
+
+  
+
+  @search.facet(:state_list).rows.each_with_index do |facet, index|
+    break if index == 10;
+    
+    # check if facet is selected
+    if (params[:state].kind_of?(Array) and params[:state].include? facet.value)
+      state_facets = existing_state_facets - [facet.value]      
+      facet_links_on << "<li>#{link_to facet.value, :keywords => params[:keywords], :state => state_facets} (-)</li>"
+    elsif @hits.size > 1
+      state_facets = existing_state_facets + [facet.value]
+      facet_links_off << "<li>#{link_to facet.value, :keywords => params[:keywords], :state => state_facets} (#{facet.count})</li>"
+    end
+
+  end
+
+  facets_html << "<strong>Filter by State</strong>"
+  if facet_links_on.size > 0
+    facets_html << "<ul class='search_facets_on'>#{facet_links_on}</ul>"
+  end
+  if facet_links_off.size > 0
+    facets_html << "<ul class='search_facets_off'>#{facet_links_off}</ul>"
+  end
+
+end
+%>
+<%= raw facets_html %>

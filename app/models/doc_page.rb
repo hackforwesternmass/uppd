@@ -5,7 +5,8 @@ class DocPage < ActiveRecord::Base
   acts_as_taggable_on :tag, :state
 
 	searchable do 
-		text :pagetext, :tag_list, :state_list
+		text :pagetext, :state_list
+		string :tag_list, :multiple => true, :stored => true
 	end
 
 end
