@@ -1,4 +1,14 @@
 ActiveAdmin.register DocPage do
+
+	index do
+	    column :filing_doc_id
+	    column :pagenumber
+	    column :tag_list
+	    column :state_list
+	    column :updated_at
+	    default_actions
+  	end
+
      form do |f|
    		f.inputs "Details" do
 	   		f.input :filing_doc_id
