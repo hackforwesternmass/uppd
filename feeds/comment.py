@@ -100,37 +100,38 @@ def parse_comment(url):
 
 def import_comments():
     """Imports new comments, if any, from url_queues table"""
-    with db.connection() as conn:
+
+    conn = db.connection()
     
-        comments_cur = conn.cursor()
-        cur = conn.cursor()
+    comments_cur = conn.cursor()
+    cur = conn.cursor()
 
-        comments_cur.execute("select id, url from url_queues where url_type = 'comment' and status = 'new'")
+    comments_cur.execute("select id, url from url_queues where url_type = 'comment' and status = 'new'")
     
-        for queue_id, url in comments_cur:
+    for queue_id, url in comments_cur:
 
-            try:
-                filing, documents = parse_comment(url)
-            except Exception as e:
-                warn("Error %s on url: %s" % (e, url))
-                continue
+        try:
+            filing, documents = parse_comment(url)
+        except Exception as e:
+            warn("Error %s on url: %s" % (e, url))
+            continue
     
-            try:
-                cur.execute(*db.dict_to_sql_insert("filings", filing))
+        try:
+            cur.execute(*db.dict_to_sql_insert("filings", filing))
 
-                filing_id = cur.fetchone()
+            filing_id = cur.fetchone()
 
-                for doc in documents:
-                    doc['filing_id'] = filing_id
-                    cur.execute(*db.dict_to_sql_insert("filing_docs", doc))
+            for doc in documents:
+                doc['filing_id'] = filing_id
+                cur.execute(*db.dict_to_sql_insert("filing_docs", doc))
 
                 cur.execute("update url_queues set status = 'done' where id = %s", (queue_id,))
 
-                cur.commit()
+                conn.commit()
 
-            except Exception as e:
-                warn("Error %s while importing comment: %s" % (e, url))
-                cur.rollback()
+        except Exception as e:
+            warn("Error %s while importing comment: %s" % (e, url))
+            conn.rollback()
   
 if  __name__ == "__main__":
     import pprint
