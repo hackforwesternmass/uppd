@@ -42,9 +42,12 @@ def connection_args():
             else:
                 match = re.search('(\w+):\s*(.+)$', line)
                 if match:
-                    key = fields[match.group(1)]
-                    if key:
+                    try:
+                        key = fields[match.group(1)]
                         data.append('%s=%s' % (key,  match.group(2)))
+                    except KeyError:
+                        pass 
+
 
     return ' '.join(data)
 
