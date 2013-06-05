@@ -38,60 +38,61 @@ from utils import *
 import db
 
 def parse_proceeding(proceeding_num):
-  """A generator that runs a search on FCC site and produces
-  urls for comments and documents relating to specified proceeding number"""
+    """A generator that runs a search on FCC site and produces
+    urls for comments and documents relating to specified proceeding number"""
 
-  # In addition to search results, the first page also contains
-  # links to subsequent pages
-  # which will be subsequently followed.
+    # In addition to search results, the first page also contains
+    # links to subsequent pages
+    # which will be subsequently followed.
 
-  try:
-    url = search_url(proceeding_num)
+    try:
+        url = search_url(proceeding_num)
     
-    content = html.parse(url)
+        content = html.parse(url)
     
-    todo = [content] # addenda...
+        todo = [content] # addenda...
 
-    pages = [] # pages to follow and process
-    cache = {} # ensure unique set
-    for url in content.xpath('//span[@class="pagelinks"]//a[contains(@href, "/ecfs/comment_search/paginate")]/@href'):
-      if not url in cache:
-        pages.append(hostify_url(url))
-        cache[url] = True
+        pages = [] # pages to follow and process
+        cache = {} # ensure unique set
 
-  except Exception as e:
-    warn('url: ', url)
-    raise e
+        for url in content.xpath('//span[@class="pagelinks"]//a[contains(@href, "/ecfs/comment_search/paginate")]/@href'):
+            if not url in cache:
+                pages.append(hostify_url(url))
+                cache[url] = True
 
-  # Where there are more than 10 or so pages, the site lists the first N then the last page.
-  # For a set of page numbers like 1 2 3 4 5 6 7  N
-  # where N is the final page number, we interpolate from 7 + 1 to N - 1
-  # If there are no missing values, 7 + 1 would be greater than N - 1 and the range would be empty.
-  if len(pages) > 1:
-      lastpage = pages.pop()
-      lastpage_match = re.match('(.+pageNumber=)(\d+)', lastpage)
-      penultimate_match = re.match('(.+pageNumber=)(\d+)', pages[-1])
-      for number in range(int(penultimate_match.group(2)) + 1, int(lastpage_match.group(2)) - 1):
-          pages.append(lastpage_match.group(1) + str(number))
+    except Exception as e:
+        warn('url: ', url)
+        raise e
 
-      pages.append(lastpage)
+    # Where there are more than 10 or so pages, the site lists the first N then the last page.
+    # For a set of page numbers like 1 2 3 4 5 6 7  N
+    # where N is the final page number, we interpolate from 7 + 1 to N - 1
+    # If there are no missing values, 7 + 1 would be greater than N - 1 and the range would be empty.
+    if len(pages) > 1:
+        lastpage = pages.pop()
 
-  todo.extend(pages)
+        lastpage_match = re.match('(.+pageNumber=)(\d+)', lastpage)
+        penultimate_match = re.match('(.+pageNumber=)(\d+)', pages[-1])
+        for number in range(int(penultimate_match.group(2)) + 1, int(lastpage_match.group(2)) - 1):
+            pages.append(lastpage_match.group(1) + str(number))
+
+        pages.append(lastpage)
+
+    todo.extend(pages)
       
-  for item in todo:
-      if hasattr(item, 'xpath'):
-        content = item 
-      else:
-        try:
-          content = html.parse(item)
-        except:
-          warn("Error fetching or parsing link", item)
-          continue
+    for item in todo:
+        if hasattr(item, 'xpath'):
+            content = item 
+        else:
+            try:
+                content = html.parse(item)
+            except Exception as e:
+                warn("Error fetching or parsing link", item, e)
+                continue
 
-      for href in content.xpath('//table[@class="dataTable"]//td/a/@href'):
-		m = re.search('/ecfs/(comment|document)/view.+id=', href)
-		if m:
-		  yield (m.group(1), hostify_url(clean_url(href)))
+        for href in content.xpath('//table[@class="dataTable"]//td/a/@href'):
+            if re.search('/ecfs/comment/view.+id=', href):
+                yield ('comment', hostify_url(clean_url(href)))
 
 def queue_urls():
     """imports all proceeding comment and document links into queue table"""
@@ -111,21 +112,21 @@ def queue_urls():
 
     for proc_id, number in proceedings:
         for url_type, url in parse_proceeding(number):
-          try:
-            cur.execute("INSERT INTO url_queues (proceeding_id, url_type, url) values (%s, %s, %s)", [proc_id, url_type, url])
-          except Exception as e:
-            if not re.match('ERROR:\s+duplicate.+"unique_url"', e.pgerror):
-                raise
+            try:
+                cur.execute("INSERT INTO url_queues (proceeding_id, url_type, url) values (%s, %s, %s)", [proc_id, url_type, url])
+            except Exception as e:
+                if not re.match('ERROR:\s+duplicate.+"unique_url"', e.pgerror):
+                    raise
 
     conn.close()
 
 if __name__ == "__main__":
-  import pprint
-  import sys
+    import pprint
+    import sys
 
-  action = sys.argv[1]
-  if action == 'test':
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint([x for x in parse_proceeding(sys.argv[2])])
-  elif action == 'run':
-    queue_urls()
+    action = sys.argv[1]
+    if action == 'test':
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint([x for x in parse_proceeding(sys.argv[2])])
+    elif action == 'run':
+        queue_urls()
