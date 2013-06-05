@@ -14,3 +14,5 @@
 /log/*.log
 /tmp
 /solr/data/*
+*~
+*.pyc

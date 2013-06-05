@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130602140246) do
+ActiveRecord::Schema.define(:version => 20130605154917) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -62,16 +62,17 @@ ActiveRecord::Schema.define(:version => 20130602140246) do
     t.string   "doctype"
     t.string   "filetype"
     t.string   "sha1hash"
-    t.string   "status"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-    t.string   "fcc_id"
+    t.string   "status",     :default => "new"
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+    t.string   "fcc_num"
   end
+
+  add_index "filing_docs", ["status"], :name => "index_filing_docs_on_status"
 
   create_table "filings", :force => true do |t|
     t.integer  "proceeding_id"
     t.string   "filing_type"
-    t.integer  "source_id"
     t.datetime "recv_date"
     t.datetime "posting_date"
     t.boolean  "exparte"
@@ -79,7 +80,6 @@ ActiveRecord::Schema.define(:version => 20130602140246) do
     t.string   "lawfirm"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
-    t.integer  "fcc_id"
     t.string   "fcc_num"
     t.boolean  "business_imp"
     t.string   "applicant"
@@ -104,9 +104,12 @@ ActiveRecord::Schema.define(:version => 20130602140246) do
 
   create_table "proceedings", :force => true do |t|
     t.string   "number"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+    t.string   "status",     :default => "Open"
   end
+
+  add_index "proceedings", ["status"], :name => "index_proceedings_on_status"
 
   create_table "sections", :force => true do |t|
     t.integer  "start_page"
@@ -132,5 +135,17 @@ ActiveRecord::Schema.define(:version => 20130602140246) do
   create_table "tags", :force => true do |t|
     t.string "name"
   end
+
+  create_table "url_queues", :force => true do |t|
+    t.integer  "proceeding_id"
+    t.string   "url_type"
+    t.string   "url"
+    t.string   "status",        :default => "new"
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+  end
+
+  add_index "url_queues", ["proceeding_id", "url_type", "url"], :name => "unique_url", :unique => true
+  add_index "url_queues", ["status"], :name => "index_url_queues_on_status"
 
 end

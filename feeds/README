@@ -1,0 +1,25 @@
+
+Invoke 
+    
+    python proceeding.py run
+
+Once a day to fetch new comments for all currently open proceedings.
+
+Invoke
+
+    python comments.py run
+
+once a day to download and extract new comment data.
+
+Invoke
+
+    python document_ocr.py run 
+
+once an hour to queue documents into the ocr system.
+
+Invoke
+
+    python document_import.py run
+
+Once an hour or more frequently to update the database with
+processed data.
