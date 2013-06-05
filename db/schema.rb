@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130605154917) do
+ActiveRecord::Schema.define(:version => 20130605201625) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -85,6 +85,8 @@ ActiveRecord::Schema.define(:version => 20130605154917) do
     t.string   "applicant"
   end
 
+  add_index "filings", ["fcc_num"], :name => "unique_fcc_num", :unique => true
+
   create_table "locations", :force => true do |t|
     t.integer  "section_id"
     t.string   "state"
@@ -135,17 +137,5 @@ ActiveRecord::Schema.define(:version => 20130605154917) do
   create_table "tags", :force => true do |t|
     t.string "name"
   end
-
-  create_table "url_queues", :force => true do |t|
-    t.integer  "proceeding_id"
-    t.string   "url_type"
-    t.string   "url"
-    t.string   "status",        :default => "new"
-    t.datetime "created_at",                       :null => false
-    t.datetime "updated_at",                       :null => false
-  end
-
-  add_index "url_queues", ["proceeding_id", "url_type", "url"], :name => "unique_url", :unique => true
-  add_index "url_queues", ["status"], :name => "index_url_queues_on_status"
 
 end

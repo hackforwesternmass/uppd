@@ -1,19 +1,7 @@
 #!/bin/env python
 
 """
-comment.py tracks the url_queues table for new comment records and
-
-1. Updates the filings table with the contents of new comments.
-2. Creates filing_doc records for any associated documents.
-
-It can be kicked off once or twice a day with the command
-
-   python comment.py run
-
-The script uses the RAILS_ENV environment variable to determine run modes
-so this should be set, either implicitly (rails runner "exec ...") or explicitly env RAILS_ENV=production.
-
-It defaults to development when unset.
+comment.py updates filing and filing_docs tables during import.
 
 """
 
@@ -22,7 +10,7 @@ import re
 from utils import *
 import db
 
-# maps FCC comment labels to our field names.
+# maps FCC comment labels to local field names.
 # a value is either a string, or a sequence consisting of a string and a lambda.
 # The string is used as the column name and the lambda, if any, is used to transform or cleanup
 # the associated data value.
@@ -98,46 +86,46 @@ def parse_comment(url):
     return data
 
 
-def import_comments():
-    """Imports new comments, if any, from url_queues table"""
+def import_comment(url):
+    """
+    The contents of url is imported into the filings table and the filing_docs table.
+    If the record is not new,  the insert fails with a duplicate error, which causes the attempt to be abandonded.
+    Otherwise the associated documents, if any, are also added.
+    """
 
     conn = db.connection()
-    
-    comments_cur = conn.cursor()
     cur = conn.cursor()
 
-    comments_cur.execute("select id, url from url_queues where url_type = 'comment' and status = 'new'")
+    try:
+        filing, documents = parse_comment(url)
+    except Exception as e:
+        warn("Error %s on url: %s" % (e, url))
+        return
     
-    for queue_id, url in comments_cur:
-
-        try:
-            filing, documents = parse_comment(url)
-        except Exception as e:
-            warn("Error %s on url: %s" % (e, url))
-            continue
-    
-        try:
-            cur.execute(*db.dict_to_sql_insert("filings", filing))
-
-            filing_id = cur.fetchone()
-
-            for doc in documents:
-                doc['filing_id'] = filing_id
-                cur.execute(*db.dict_to_sql_insert("filing_docs", doc))
-
-                cur.execute("update url_queues set status = 'done' where id = %s", (queue_id,))
-
-                conn.commit()
-
-        except Exception as e:
-            warn("Error %s while importing comment: %s" % (e, url))
+    try:
+        cur.execute(*db.dict_to_sql_insert("filings", filing))
+    except Exception as e:
+        if re.match('ERROR:\s+duplicate', e.pgerror):
+            return
+        else:
             conn.rollback()
-  
+            warn("Error %s while importing comment: %s" % (e, url))
+    else:
+        filing_id = cur.fetchone()
+
+        for doc in documents:
+            doc['filing_id'] = filing_id
+            try:
+                cur.execute(*db.dict_to_sql_insert("filing_docs", doc))
+            except Exception as e:
+                conn.rollback()
+                warn("Error %s while importing documents %s for comment: %s" % (e, doc, url))
+                return
+
+        conn.commit()
+
 if  __name__ == "__main__":
     import pprint
     import sys
-    if sys.argv[1] == 'test':
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(parse_comment(sys.argv[2]))
-    elif sys.argv[1] == 'run':
-        import_comments()
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(parse_comment(sys.argv[2]))

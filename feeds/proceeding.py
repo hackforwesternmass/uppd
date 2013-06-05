@@ -1,18 +1,18 @@
 #!/bin/env python
 
 """
-proceeding.py is responsible for maintaining a queue of comment and document
-urls for every proceeding we are interested in.
+proceeding.py is responsible for adding new filings
+for every proceeding we are interested in.
 
 Since the remote system that does not keep track of what items we've seen,
-there's a unique index in the urls_queues table to prevent multiple submissions
-for the same url.
+there's a unique index on the filing.fcc_num  column
+to prevent multiple submissions for the same data.
 
 As a result, the update task is inelegantly simple minded and brutish:
 
-Search the FCC site for all proceedings we care about,
-Grab all relevant urls and push them into the table.
-If the record already exists, the insert throws particular error, which we ignore.
+Search the FCC site for all proceedings we care about.
+Grab all relevant filings and add them to the table.
+Existing records will fail and new records will succeed.
 
 After the initial import, most runs will only add a few new records at a time,
 if any.
@@ -26,8 +26,6 @@ so this should be set, either implicitly (rails runner "exec ...") or explicitly
 
 It defaults to development when unset.
 
-Other scripts process the records in url_queues and are discussed elsewhere.
-
 Author: Gyepi Sam <self-github@gyepi.com>
 
 """
@@ -36,6 +34,7 @@ import re
 from lxml import html
 from utils import *
 import db
+import comment
 
 def parse_proceeding(proceeding_num):
     """A generator that runs a search on FCC site and produces
@@ -90,12 +89,12 @@ def parse_proceeding(proceeding_num):
                 warn("Error fetching or parsing link", item, e)
                 continue
 
-        for href in content.xpath('//table[@class="dataTable"]//td/a/@href'):
-            if re.search('/ecfs/comment/view.+id=', href):
-                yield ('comment', hostify_url(clean_url(href)))
+        for href in content.xpath('//table[@class="dataTable"]//td/a[contains(@href, "/ecfs/comment/view")]/@href'):
+            yield hostify_url(clean_url(href))
 
-def queue_urls():
-    """imports all proceeding comment and document links into queue table"""
+def import_comments():
+    """imports all proceeding comments into filing table and documents into filing_docs table"""
+
     conn = db.connection()
     cur = conn.cursor()
     cur.execute("SELECT id, number FROM proceedings where status = 'Open'")
@@ -108,15 +107,9 @@ def queue_urls():
 
     conn.commit()
 
-    conn.autocommit = True # needed for ignoring duplicates
-
     for proc_id, number in proceedings:
-        for url_type, url in parse_proceeding(number):
-            try:
-                cur.execute("INSERT INTO url_queues (proceeding_id, url_type, url) values (%s, %s, %s)", [proc_id, url_type, url])
-            except Exception as e:
-                if not re.match('ERROR:\s+duplicate.+"unique_url"', e.pgerror):
-                    raise
+        for url in parse_proceeding(number):
+            comment.import_comment(url)
 
     conn.close()
 
@@ -129,4 +122,4 @@ if __name__ == "__main__":
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint([x for x in parse_proceeding(sys.argv[2])])
     elif action == 'run':
-        queue_urls()
+        import_comments()
