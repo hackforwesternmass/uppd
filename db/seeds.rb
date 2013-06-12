@@ -17,7 +17,6 @@ DocPage.delete_all
 	filingLast = Filing.create!(
 			proceeding_id: n,
 			filing_type: "Test",
-			source_id: n,
 			recv_date: Time.now,
 			author: "Test #{n}",
 			lawfirm: "Test #{n}",

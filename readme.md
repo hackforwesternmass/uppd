@@ -25,8 +25,12 @@ You can edit there.
 After you pull and run rake db:migrate to get going you will also need to run
 on your first install.
 rails g sunspot_rails:install
+You can seed your database by running
+rake db:seed
+rake sunspot:reindex
 After that you will need to run
 rake sunspot:solr:start
+
 Next time you just need to run 
 rake sunspot:solr:start
 
