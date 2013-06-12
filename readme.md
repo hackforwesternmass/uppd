@@ -13,15 +13,24 @@ Sunspot Solr manages the search
 Python and Perl where used to pull in the initial data with other ocr tools.
 Shortly more of the data will be in and then the process will check automatically for more content.
 
-# Managing the content
+## Managing the content
 
-## Update the Home and Contact Page
+### Update the Home and Contact Page
 
 Log into the website a /admin
 Click on Pages.
 You can edit there.
 
-# Road map
+## Getting Started
+After you pull and run rake db:migrate to get going you will also need to run
+on your first install.
+rails g sunspot_rails:install
+After that you will need to run
+rake sunspot:solr:start
+Next time you just need to run 
+rake sunspot:solr:start
+
+## Road map
 
 ## Better editing of content
  * Inline tagging of files
