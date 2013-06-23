@@ -1,0 +1,6 @@
+<h3>Search FCC Filing Documents</h3>
+<%= form_tag root_path, :method => :get do %>
+  <div class="search">
+    <%= text_field_tag :search, params[:search] %><%= submit_tag "Search" %>
+  </div>
+<% end %>

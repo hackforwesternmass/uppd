@@ -1,0 +1,7 @@
+<% if @doc_pages %>
+<% provide(:title, 'FCC Filing Document Search Results') %>
+<div class="result-block">
+  <%= render @doc_pages %>
+</div>  
+<%= will_paginate @doc_pages, :params => {:search => params[:search]} %>
+<% end %>
