@@ -29,19 +29,19 @@ module DocPagesHelper
       data.push(x)
     end
 
-    data.push(filing.lawfirm)
-
-    # Avoid "Numerous" or duplicated author name
-    unless ["Numerous", filing.author].include?(filing.applicant)
-      data.push(filing.applicant)
-    end
-
     # If all else has failed, fall back to avoided data
-    if data.compact.empty?
-      data = [filing.author, filing.applicant]
+    if data.compact.blank?
+      data = [filing.author || filing.applicant]
     end
 
-    "#{filing.filing_type} from #{data.compact.join(" / ")}"
+    result = [filing.filing_type]
+
+    unless (x = data.compact).blank?
+      result.push('from')
+      result.push(x.join(' '))
+    end
+
+    result.join(' ')
   end
 
   def search_result(doc_page)
@@ -58,8 +58,9 @@ module DocPagesHelper
           end
         end
 
-        add_secondary.call("Law Firm", doc_page.filing.lawfirm)
         add_secondary.call("Page", doc_page.pagenumber)
+        add_secondary.call("Law Firm", doc_page.filing.lawfirm)
+        add_secondary.call("Applicant", doc_page.filing.applicant)
         add_secondary.call("Received", doc_page.filing.recv_date, true)
         add_secondary.call("Posted", doc_page.filing.posting_date, true)
 
