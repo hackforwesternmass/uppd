@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130618052107) do
+ActiveRecord::Schema.define(:version => 20130622185432) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -115,6 +115,18 @@ ActiveRecord::Schema.define(:version => 20130618052107) do
   end
 
   add_index "proceedings", ["status"], :name => "index_proceedings_on_status"
+
+  create_table "section_filers", :force => true do |t|
+    t.integer  "section_id"
+    t.string   "statecode",    :limit => 2
+    t.boolean  "incarcerated",              :default => false
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
+  end
+
+  add_index "section_filers", ["incarcerated"], :name => "index_section_filers_on_incarcerated"
+  add_index "section_filers", ["section_id"], :name => "index_section_filers_on_section_id"
+  add_index "section_filers", ["statecode"], :name => "index_section_filers_on_statecode"
 
   create_table "sections", :force => true do |t|
     t.integer  "start_page"

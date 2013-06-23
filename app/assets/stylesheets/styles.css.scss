@@ -7,15 +7,17 @@
 		color:#fff;
 	}
 }
+
 .footer{
 	h1, h2, h3, h4, h5, h6{
-		margin:1em 0 1em 0;
+		margin:0.25em 0;
 	}
 	a{
 		&:hover{
 			text-decoration:underline;
 		}
 	}
+
 }
 
 $topbar-bg:#111;
@@ -29,6 +31,36 @@ $topbar-bg:#111;
 	}
 }
 
-a:hover{
-	background: none;
+div.result-block {
+
+  margin: 20px 0;
+
+  .result {
+
+    margin-top: 1em;
+
+    .primary {
+      font-size: 1.5em;
+      margin: 0 0 .25em;
+    }
+
+    .secondary {
+      font-size: 0.85em;
+      margin: 0 0 0.125em 0;
+
+      .name::after {
+        content: ": "
+      }
+    }
+  }
+}
+
+
+
+.pagination {
+    font-size: 2.5em;
+}
+
+.fcc-document-block {
+ margin: 0 15px;   
 }

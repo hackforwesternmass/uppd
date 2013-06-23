@@ -49,4 +49,6 @@ http://apps.fcc.gov/ecfs/proceeding/ is a good example of a page the leads to Do
  # DB Schema
 
 
+# Requirements
 
+apt-get install libpq-dev

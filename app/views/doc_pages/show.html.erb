@@ -1,26 +1,12 @@
 <p id="notice"><%= notice %></p>
 
-<h2>
-	Results for Document # <%= @doc_page.filing_doc_id %>
-</h2>
+<div class="fcc-document-links">
+  <span>View at FCC site :</span>
+  <span><%= link_to "Filing \##{@doc_page.filing.fcc_num}", fcc_filing_url(@doc_page.filing) %> |</span>
+  <span><%= link_to "Document \##{@doc_page.filing_doc.fcc_num}", @doc_page.filing_doc.url %></span>
+</div>
 
 <p>
-	<span class="label">
-		Tags: <%= @doc_page.tag_list %>
-	</span>
-	<span class="label">
-		State: <%= @doc_page.state_list %>
-	</span>
-</p>
-
-<p>
-	<h3>Links to Documents</h3>
-		<%= link_to "Visit", @doc_page.filing_doc.url %>
-</p>
-
-<p>
-	<h3>Preview of Documents</h3>
 	<iframe height="650" width="800" frameborder="0" src="<%= @doc_page.filing_doc.url %>">
-
 	</iframe>
 </p>

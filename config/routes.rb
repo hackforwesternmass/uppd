@@ -7,12 +7,7 @@ Uppd::Application.routes.draw do
     resources :doc_pages
 end
 
-  root :to => 'pages#show', :id => 1
-
-  match '/documents' => 'doc_pages#index'
-
-
-  match '/contact' => 'pages#show', :id => 2
+  root :to => 'application#index', :via => :get
 
   ActiveAdmin.routes(self)
 

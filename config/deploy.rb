@@ -1,4 +1,5 @@
 #$:.unshift(File.expand_path('./lib', ENV['rvm_path'])) # Add RVM's lib directory to the 
+
 require 'rvm/capistrano'  # Add RVM integration
 require 'bundler/capistrano'  # Add Bundler integration
 
@@ -26,9 +27,28 @@ default_run_options[:pty] = true
 # set :scm, :git # You can set :scm explicitly or Capistrano will make an intelligent guess based on known version control directory names
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
 
+desc "Run tasks on staging environment"
+task :staging do
 role :web, "75.98.173.74"                          # Your HTTP server, Apache/etc
 role :app, "75.98.173.74"                          # This may be the same as your `Web` server
 role :db,  "75.98.173.74", :primary => true # This is where Rails migrations will run
+end
+
+desc "Run tasks on production environment"
+task :production do
+    set :user, "uppdadmin"
+    set :deploy_to, "/usr/local/uppd"
+    set :rvm_bin_path, "/usr/local/rvm/bin"
+    server "50.57.119.66", :web, :app, :db, :primary => true
+end
+
+before "deploy:assets:precompile", 'deploy:symlink_shared'
+namespace :deploy do
+    task :symlink_shared do
+       run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+    end
+end
+
 #role :db,  "your slave db-server here"
 
 # if you want to clean up old releases on each deploy uncomment this:
