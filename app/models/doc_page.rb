@@ -1,17 +1,12 @@
 class DocPage < ActiveRecord::Base
   attr_accessible :filing_doc_id, :pagenumber, :pagetext, :wordcount
-  #, :tag_list, :state_list
   
   belongs_to :filing_doc
   has_one :filing, :through => :filing_doc
   
-  #acts_as_taggable
-  #acts_as_taggable_on :tag, :state
-
   searchable do 
     text :pagetext
-    #string :state_list
-    #string :tag_list, :multiple => true, :stored => true
+    #TODO add tag items here.
   end
 
   def section
