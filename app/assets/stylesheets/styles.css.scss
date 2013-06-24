@@ -2,6 +2,20 @@
   min-height: 800px;
 }
 
+
+.help-show {
+	text-decoration: underline;
+}
+
+.help {
+	display: none;
+	border: 1px solid rgb(41, 41, 41);
+	padding: 20px;
+	margin: 5px;
+	background-color: rgb(245, 245, 245);
+	border-radius: 5px;
+}
+
 .header, .footer{
 	background: #2c2c2c;
 	*{
