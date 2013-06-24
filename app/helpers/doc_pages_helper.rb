@@ -46,7 +46,16 @@ module DocPagesHelper
 
   def search_result(doc_page)
     content_tag(:div, :class => 'result') do
-        data = [content_tag(:div, link_to(result_header(doc_page), doc_page), :class => 'primary')]
+        data = []
+
+        data.push content_tag(:div, link_to(result_header(doc_page), doc_page), :class => 'primary')
+
+        data.push <<-EOS
+        <div class="secondary">
+        <span class="name">Page</span><span class="value">#{doc_page.pagenumber}</span> of <span class="value">#{doc_page.filing_doc.pagecount}</span>
+        </div>
+        EOS
+
 
         add_secondary = Proc.new do |label, value, format_date=false|
           unless value.blank?
@@ -58,11 +67,11 @@ module DocPagesHelper
           end
         end
 
-        add_secondary.call("Page", doc_page.pagenumber)
-        add_secondary.call("Law Firm", doc_page.filing.lawfirm)
-        add_secondary.call("Applicant", doc_page.filing.applicant)
-        add_secondary.call("Received", doc_page.filing.recv_date, true)
-        add_secondary.call("Posted", doc_page.filing.posting_date, true)
+        filing = doc_page.filing
+        add_secondary.call("Law Firm", filing.lawfirm)
+        add_secondary.call("Applicant", filing.applicant) if filing.author.to_s.downcase != filing.applicant.to_s.downcase 
+        add_secondary.call("Received", filing.recv_date, true)
+        add_secondary.call("Posted", filing.posting_date, true)
 
         data.join("\n").html_safe
     end
