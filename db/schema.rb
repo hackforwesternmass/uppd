@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130622185432) do
+ActiveRecord::Schema.define(:version => 20130626165035) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -57,6 +57,16 @@ ActiveRecord::Schema.define(:version => 20130622185432) do
 
   add_index "doc_pages", ["filing_doc_id"], :name => "index_doc_pages_on_filing_doc_id"
   add_index "doc_pages", ["pagenumber"], :name => "index_doc_pages_on_pagenumber"
+
+  create_table "document_tags", :force => true do |t|
+    t.integer  "section_id"
+    t.integer  "tag_id"
+    t.integer  "tag_count",  :default => 0, :null => false
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
+
+  add_index "document_tags", ["section_id", "tag_id"], :name => "tagged_item"
 
   create_table "filing_docs", :force => true do |t|
     t.integer  "filing_id"
@@ -131,12 +141,14 @@ ActiveRecord::Schema.define(:version => 20130622185432) do
   create_table "sections", :force => true do |t|
     t.integer  "start_page"
     t.integer  "end_page"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
     t.string   "fcc_num"
+    t.integer  "filing_doc_id"
   end
 
   add_index "sections", ["fcc_num"], :name => "index_sections_on_fcc_num"
+  add_index "sections", ["filing_doc_id"], :name => "index_sections_on_filing_doc_id"
   add_index "sections", ["start_page", "end_page"], :name => "pagenumbers"
 
   create_table "taggings", :force => true do |t|
@@ -153,7 +165,14 @@ ActiveRecord::Schema.define(:version => 20130622185432) do
   add_index "taggings", ["taggable_id", "taggable_type", "context"], :name => "index_taggings_on_taggable_id_and_taggable_type_and_context"
 
   create_table "tags", :force => true do |t|
-    t.string "name"
+    t.string   "context"
+    t.integer  "position"
+    t.string   "name"
+    t.string   "scope"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
+
+  add_index "tags", ["context", "name", "position"], :name => "tag_label"
 
 end

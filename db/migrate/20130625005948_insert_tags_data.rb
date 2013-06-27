@@ -3,10 +3,6 @@ class InsertTagsData < ActiveRecord::Migration
     require'yaml'
 
     text = <<-EOS
-Location:
-  - State of Origin
-  - section
-
 Identity:
   - Prison/jail phone company
   - document
@@ -28,7 +24,11 @@ Identity:
   - document
   EOS
 
+    statecodes = %w(AK AL AR AS AZ CA CO CT DC DE FL GA HI IA ID IL IN KS KY LA MA MD ME MI MN MO MS
+                    MT NC ND NE NH NJ NM NV NY OH OK OR PA PR RI SC SD TN TX UT VA VI VT WA WI WV WY)
+
     data = YAML.load(text)
+    data["State Code"] = statecodes.map { |code| [code, "section"] }.flatten
 
     ActiveRecord::Base.transaction do
       data.each do |context, rows|

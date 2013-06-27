@@ -1,5 +1,6 @@
 <% if @doc_pages %>
 <% provide(:title, 'FCC Filing Document Search Results') %>
+<div><%= @hits.total_count %> Results</div>
 <div class="result-block">
   <%= render @doc_pages %>
 </div>  

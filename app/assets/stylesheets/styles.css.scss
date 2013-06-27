@@ -49,6 +49,21 @@ $topbar-bg:#111;
 	}
 }
 
+div.search {
+
+  #more {
+    .element {
+      margin-top: 13px;
+      .label {
+        margin-bottom: 3px;
+        font-size: 1.2em;
+      }
+    }
+  }
+
+  input[type="submit"] { font-size: 1.2em; margin-top: 1em }
+}
+
 div.result-block {
 
   margin: 20px 0;
@@ -82,3 +97,5 @@ div.result-block {
 .fcc-document-block {
  margin: 0 15px;   
 }
+
+

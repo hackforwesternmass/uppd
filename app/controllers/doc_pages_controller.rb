@@ -8,18 +8,6 @@ class DocPagesController < ApplicationController
       fulltext params[:search] do
           highlight :pagetext, :stored => true
         end
-=begin
-      facet :tag_list
-      paginate :per_page => 20
-       # tags, AND'd        
-      if params[:tag].present?
-        all_of do
-          params[:tag].each do |tag|
-            with(:tag_list, tag)
-          end
-        end
-      end
-=end
     end
 
     @hits = @search.hits

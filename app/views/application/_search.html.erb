@@ -2,19 +2,49 @@
 <%= form_tag root_path, :method => :get do %>
   <div class="search">
     <%= text_field_tag :search, params[:search] %>
-    <%= submit_tag "Search" %>
-     <a class="help-show" href='#'>help</a>
+    <a id="showadvanced" href='#'>Advanced</a>
+    <a id="showhelp" href='#' style="margin: 0 20px;">Help</a>
+    <div id="more" style="display:<%= @advanced_state || 'none' %>;">
+      <div class="element">
+          <div class="label">Proceeding</div>
+          <%= select_tag 'proceeding_id', options_for_select(Proceeding.where(:status => 'Open').map { |p| [ p.number, p.id ] }, params[:proceeding_id]), { prompt: "Choose" } %>
+      </div>
+
+      <% Tag.context_metadata.each do |label, name, options| %>
+        <div class="element">
+          <div class="label"><%= label %></div>
+          <%= select_tag name, options_for_select(options.map { |option| [option.name, option.id] }, params[name]), { prompt: "Choose" } %>
+        </div>
+      <% end %>
+
+      <% Filing.date_metadata.each do |entry| %>
+      <div class="element">
+        <div class="label"><%= entry[:label] %></div>
+        <% date = (@date_params || {})[entry[:name]] %>
+        <%= select_year(date, :start_year => Date.today.year - 10, :end_year => Date.today.year, :prompt => 'Choose Year', :prefix => entry[:name]) %>
+        <%= select_month(date, :prompt => 'Choose Month', :prefix => entry[:name]) %>
+        <%= select_day(date, :prompt => 'Choose Day', :prefix => entry[:name]) %>
+      </div>
+    <% end %>
+   </div>
+   <%= submit_tag "Search" %>
   </div>
 <% end %>
+<div id="help" style="display:none;">
+  <p>You can focus your search by adding the following prefixes.</p>
+  <ul>
+    <li>author:</li>
+    <li>lawfirm:</li>
+    <li>applicant:</li>
+  </ul>
+  <p>Examples:</p>
+  <ul>
+    <li>author:Cheryl</li>
+    <li>author:"Cheryl Leanza"</li>
+    <li>lawfirm:Drinker</li>
+    <li>lawfirm:"Drinker Biddle"</li>
+    <li>applicant:Numerous</li>
+    <li>applicant:CenturyLink</li>
+  </ul>
 
-  <div class="help">
-    <p>
-      You can focus your search by adding the following prefixes.
-    </p>
-    <ul>
-      <li>state: <em>"eg. state: MA"</li>
-      <li>author:</li>
-      <li>from:</li>
-      <li>applicant:</li>
-    </ul>
-  </div>
+</div>

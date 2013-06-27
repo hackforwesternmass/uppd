@@ -1,5 +1,12 @@
 $(document).ready(function(){
-	$('a.help-show').click(function() { 
-		$('.help').toggle();
+
+	$('#showhelp').click(function() { 
+		$('#help').toggle();
 	});
+
+	$('#showadvanced').click(function() { 
+		$('#more').toggle();
+	});
+
 });
+
