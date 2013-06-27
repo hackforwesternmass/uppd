@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
           end
         end
 
-        if params[:search].blank?
+        unless all_fields.count { |name| name != :search }.zero?
             advanced_state = "visible"
         end
 
