@@ -5,9 +5,14 @@ Uppd::Application.routes.draw do
     resources :proceedings
     resources :filings
     resources :doc_pages
-end
+  end
 
   root :to => 'application#index', :via => :get
+  match 'page/:id' => 'doc_pages#show', :as => :page
+  match '/document_tags/by_dom_id_root/:filing_doc_id/:pagenumber' => 'document_tags#by_dom_id_root', :as => :document_tags_by_dom_id_root
+  match '/document_tags/create' => 'document_tags#create', :via => :post, :as => :document_tags_create
+  match '/document_tags/update' => 'document_tags#update', :via => :post, :as => :document_tags_update
+  match '/document_tags/delete' => 'document_tags#delete', :via => :post, :as => :document_tags_delete
 
   ActiveAdmin.routes(self)
 

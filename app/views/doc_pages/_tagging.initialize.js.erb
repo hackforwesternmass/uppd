@@ -1,0 +1,9 @@
+<script type="text/javascript">
+var chain = window.onload;
+window.onload = function() {
+  if (typeof(chain) == "function")
+    chain();
+
+  tagging.initialize(<%=raw @doc_page.document_tags_attributes.to_json %>);
+}
+</script>

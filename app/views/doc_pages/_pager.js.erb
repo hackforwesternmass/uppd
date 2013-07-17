@@ -1,0 +1,32 @@
+<script type="text/javascript">
+document.pager = {
+
+  pagenumber : <%= page.pagenumber %>,
+  pagecount : <%= page.filing_doc.pagecount %>,
+
+  pagecontent_url : function(pagenumber) {
+    return "http://ppi-extraction-image-production.s3.amazonaws.com/<%= page.filing_doc.fcc_num %>/page-" + String(pagenumber) + ".jpg";
+  },
+
+  update_view : function() {
+    $("#pagecontent").prop("src", this.pagecontent_url(this.pagenumber));
+    $('#pagenumber').html(String(this.pagenumber));
+  },
+
+  next : function() {
+    if (this.pagenumber < this.pagecount) {
+      this.pagenumber += 1;
+      tagging.advance(this.pagenumber, "next");
+      this.update_view();
+    }
+  },
+
+  previous : function() {
+    if (this.pagenumber > 1) {
+      this.pagenumber -= 1;
+      tagging.advance(this.pagenumber, "previous");
+      this.update_view();
+    }
+  },
+};
+</script>

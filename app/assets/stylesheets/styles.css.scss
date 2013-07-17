@@ -91,11 +91,36 @@ div.result-block {
 
 
 .pagination {
-    font-size: 2.5em;
+    font-size: 1.5em;
 }
 
 .fcc-document-block {
  margin: 0 15px;   
 }
 
+.doc-page .metadata {
+    font-size: .75em;
+}
 
+.pager {
+   
+  font-size: 1.25em;
+
+   .element {
+       background-color: #e1e1e1;
+       padding: 3px;
+       cursor: pointer;
+   }
+
+   #pagenumber {
+       background-color: #21e1e1;
+   }
+}
+
+.tagging {
+    button {
+        padding: 2px;
+        margin-top: 4px;
+
+    }
+}

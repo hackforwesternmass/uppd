@@ -22,17 +22,13 @@
 
   <body>
     <%= render 'shared/menu' %>
-    <div class="row">
-      <div class="large-8 columns">
-        <%= render 'application/search' %>
-      </div>
-    </div>
-    
+   
     <div class="row content">
       <div class="large-12 columns">
         <%= yield %>
       </div>
     </div>
+
     <%= render 'shared/footer' %>
     <%= javascript_include_tag "application" %>
   </body>

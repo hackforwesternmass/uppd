@@ -13,6 +13,27 @@ class DocPage < ActiveRecord::Base
             SELECT * FROM sections WHERE filing_doc_id = ? AND ? BETWEEN start_page AND end_page
             EOS
   }
+
+  # Returns a list of defined tags along with specific taggings for this page, if any.
+  # Each row will have at least filing_doc_id, context
+  has_many :document_tags,
+           :finder_sql => Proc.new {
+            [<<-EOS, filing_doc_id, filing_doc_id, pagenumber]
+            SELECT
+            ? as filing_doc_id, b.*, a.* -- order matters here. later column names override earlier ones.
+            FROM (SELECT context FROM tags GROUP BY context) a
+            LEFT OUTER JOIN (
+            SELECT
+            tags.id as tag_id, tags.context, tags.name,
+            document_tags.id as document_tag_id,
+            sections.id as section_id, sections.start_page, sections.end_page
+            FROM tags
+            INNER JOIN document_tags ON tags.id = document_tags.tag_id
+            INNER JOIN sections ON sections.id = document_tags.section_id AND sections.filing_doc_id = ? AND ? BETWEEN start_page AND end_page
+            ) b ON a.context = b.context
+            EOS
+  }
+
   
   searchable do 
     text :pagetext
@@ -39,6 +60,10 @@ class DocPage < ActiveRecord::Base
   #TODO -- This has been obsoleted by tags. remove after migration
   def section_filer
     section.section_filer rescue nil 
+  end
+
+  def document_tags_attributes
+    document_tags.map(&:extended_attributes)
   end
 
   def self.parse_search(terms)

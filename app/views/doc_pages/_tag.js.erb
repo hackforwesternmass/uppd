@@ -1,0 +1,219 @@
+<script type="text/javascript">
+
+function Tag(data) {
+  this.data = data
+}
+
+Tag.States = ['new', 'show', 'edit'];
+
+Tag.prototype = {
+
+  clone_data : function(data) {
+    var dst = {}
+    for (var key in data)
+      dst[key] = data[key]
+        return dst;
+  },
+
+  undo_begin: function() {
+    this.undo_data = this.clone_data(this.data);
+  },
+
+  undo_discard: function() {
+    delete this.undo_data;
+  },
+
+  undo_commit: function() {
+    this.data = this.clone_data(this.undo_data);
+    this.undo_discard();
+  },
+
+  dom_id: function (prefix) {
+    var parts = [];
+
+    if (prefix != null)
+      parts.push(prefix);
+
+    parts.push(this.data.dom_id_root);
+
+    return parts.join('_');
+  },
+
+  context: function() {
+    return this.data.context;
+  },
+
+  is_new: function() {
+    return this.data.section_id == null;
+  },
+
+  state_panel: function(name) {
+    return $(this.dom_id("#" + (name == null ? this.state : name)))
+  },
+
+  page_action: function(pagenumber, direction, tag_data) {
+
+    var data = this.data;
+
+    var update_view = function() {
+      this.update_view(this.state, this.state_panel());
+    };
+
+    var actions = [];
+
+    if (this.state == "edit") {
+      switch(direction) {
+        case "previous":
+          if (data.start_page > pagenumber) {
+            data.start_page = pagenumber;
+            actions.push(update_view);
+          }
+          break;
+        case "next":
+          if (data.end_page < pagenumber) {
+            data.end_page = pagenumber;
+            actions.push(update_view);
+          }
+          break;
+      }
+    } else {
+      this.data = tag_data;
+      actions.push(function() { this.reset_state() });
+      actions.push(update_view);
+    }
+
+    for (var i = 0; i < actions.length; i++) {
+      actions[i].call(this);
+    }
+  },
+
+  update_view: function (state, panel) {
+    if (state == "show" || state == "edit") {
+      var data = this.data;
+      $.each(["name", "start_page", "end_page"], function (_, name) {
+        var item = panel.find("." + name);
+        if (item.length > 0) {
+          item.html(data[name]);
+        }
+      });
+
+      if (state == "edit") {
+          panel.find(this.dom_id("#edit_tag_id")).val(data.tag_id);
+      }
+    }
+  },
+
+  scope: function(func) {
+    var args = [this];
+    for (var i = 0; i < arguments.length; i++)
+      args.push(arguments[i]);
+
+    func.apply(null, args);
+  },
+
+  update_tag_data: function(tag_input) {
+    var opt = tag_input.options[tag_input.selectedIndex];
+    this.data.name = opt.text;
+    this.data.tag_id = opt.value;
+  },
+
+  initialize_handler: function (state, panel) {
+    switch(state) {
+      case "new":
+        this.scope(function(tag) {
+          panel.find(tag.dom_id("#new_tag_id")).change(function(){
+
+            tag.undo_begin();
+
+            var pagenumber = Number($('#pagenumber').html());
+            tag.data.start_page = pagenumber;
+            tag.data.end_page = pagenumber;
+
+            tag.update_tag_data(this);
+
+            this.value = ""; // reset select control back to default value...
+
+            tag.set_state("edit");
+          })
+        });
+
+        break;
+
+      case "edit":
+        this.scope(function(tag) {
+          panel.find("button.save").click(function() {
+            var action = tag.is_new() ? 'create' : 'update';
+            $.post('/document_tags/' + action, tag.data, function(data) {
+                tag.data = data;
+                tag.undo_discard()
+                tag.reset_state();
+            });
+          });
+
+          panel.find("button.cancel").click(function() {
+            tag.undo_commit();
+            tag.reset_state();
+          });
+
+          panel.find(tag.dom_id("#edit_tag_id")).change(function(){
+            tag.update_tag_data(this);
+          });
+
+        });
+
+        break;
+
+      case "show":
+        this.scope(function(tag) {
+          panel.find("button.edit").click(function() {
+            tag.undo_begin();
+            tag.set_state("edit");
+          })
+        });
+
+        this.scope(function(tag) {
+          panel.find("button.delete").click(function() {
+            if (confirm("Delete tag: " + tag.data.context + "/" + tag.data.name + "?")) {
+              $.post("/document_tags/delete", tag.data, function(data) {
+                tag.data = data;
+                tag.reset_state();
+              })
+            }
+          })
+        });
+
+        break;
+    }
+  },
+
+  reset_state: function () {
+    this.set_state(this.is_new() ? "new" : "show");
+  },
+
+  set_state: function (new_state) {
+    this.scope(function(obj) {
+      $.each(Tag.States, function(_, state) {
+        var panel = obj.state_panel(state);
+        if (state == new_state) {
+          obj.update_view(state, panel);
+          panel.show();
+        } else {
+          panel.hide();
+        }
+      })
+    });
+
+    this.state = new_state
+  },
+
+  initialize: function() {
+    this.scope(function(obj) {
+      $.each(Tag.States, function(_, state) {
+        obj.initialize_handler(state, obj.state_panel(state));
+      })
+    });
+    this.reset_state();
+  },
+}
+
+</script>

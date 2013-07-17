@@ -1,0 +1,30 @@
+<script type="text/javascript">
+
+function Tagging() {
+}
+
+
+Tagging.prototype.initialize = function(data) {
+  var tags = [];
+  
+  $.each(data, function(_, datum) { 
+    var tag = new Tag(datum);
+    tag.initialize();
+    tags.push(tag);
+  });
+
+  this.tags = tags;
+}
+
+Tagging.prototype.advance = function(pagenumber, direction) {
+  var obj = this;
+  $.getJSON("/document_tags/by_dom_id_root/<%= @doc_page.filing_doc_id %>/" + pagenumber, function (data_by_context) {
+    $.each(obj.tags, function(_, tag) {
+      tag.page_action(pagenumber, direction, data_by_context[tag.dom_id()]);
+    })
+  });
+}
+
+var tagging = new Tagging();
+
+</script>

@@ -1,12 +1,60 @@
-<p id="notice"><%= notice %></p>
+<% if params[:search_path].present? %>
+  <div style="margin:5px 0;">
+  <%= link_to "Return to Search", params[:search_path] %><br />
+  </div>
+<% end %>
 
-<div class="fcc-document-links">
-  <span>View at FCC site :</span>
-  <span><%= link_to "Filing \##{@doc_page.filing.fcc_num}", fcc_filing_url(@doc_page.filing) %> |</span>
-  <span><%= link_to "Document \##{@doc_page.filing_doc.fcc_num}", @doc_page.filing_doc.url %></span>
+<div class="row">
+  <div class="large-12 columns metadata">
+    <%= page_metadata(@doc_page) %>
+  </div>
 </div>
 
-<p>
-	<iframe height="650" width="800" frameborder="0" src="<%= @doc_page.filing_doc.url %>">
-	</iframe>
-</p>
+<div class="row doc-page">
+  <div class="large-8 columns page">
+    <img id="pagecontent" src="<%= page_url(@doc_page) %>" />
+  </div>
+  <div class="large-4 columns">
+    <%= render "tag.js.erb" %>
+    <%= render "tagging.js.erb" %>
+    <% @doc_page.document_tags.each do |tag| %>
+      <fieldset class="tagging">
+        <legend><%= tag.context %></legend>
+
+        <div id="<%= tag.dom_id('new') %>" style="display: none;">
+          <%= select_tag tag.dom_id('new_tag_id'), options_from_collection_for_select(Tag.where(:context => tag.context), "id", "name"), :title => "Choose new tag", :prompt => "Choose..." %>
+        </div>
+
+        <div id="<%= tag.dom_id('show') %>" style="display: none;">
+          <div>Name: <span class="name" /></div> 
+          <div>Start Page: <span class="start_page" /></div>
+          <div>End Page: <span class="end_page" /></div>
+          <div>
+            <button class="edit">Edit</button>
+            <button class="delete">Delete</button>
+          </div>
+        </div>
+
+        <div id="<%= tag.dom_id('edit') %>" style="display: none;">
+          <div>Name: 
+            <%= select_tag tag.dom_id('edit_tag_id'), options_from_collection_for_select(Tag.where(:context => tag.context), "id", "name"), :title => "Choose new tag" %>
+          </div>
+          <div>Start Page: <span class="start_page" /></div>
+          <div>End Page: <span class="end_page" /></div>
+          <div>
+            <button class="save">Save</button>
+            <button class="cancel">Cancel</button>
+          </div>
+        </div>
+
+      </fieldset>
+      <% end %>
+      <%= render "tagging.initialize.js.erb" %>
+    </div>
+  </div>
+
+<div class="row doc-page">
+    <div class="row pager" id="page_navigation">
+        <%= page_navigation(@doc_page) %>  
+    </div>
+  </div>
