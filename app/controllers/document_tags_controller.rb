@@ -1,4 +1,7 @@
 class DocumentTagsController < ApplicationController
+  
+  after_filter :reindex_pages, :only => [:create, :update, :delete]
+
   def by_dom_id_root
     doc_page = DocPage.first(:conditions => {:filing_doc_id => params[:filing_doc_id], :pagenumber => params[:pagenumber]})
     render json: doc_page.document_tags_attributes.inject({}) { |hash, tag| hash[tag["dom_id_root"]] = tag; hash }
@@ -32,8 +35,12 @@ class DocumentTagsController < ApplicationController
      end
   end
 
-  protected
+  private
   def render_document_tag
     render json: DocPage.first(:conditions => {:filing_doc_id => params[:filing_doc_id], :pagenumber => params[:start_page]}).document_tags.find { |tag| tag.context == params[:context] }.extended_attributes
+  end
+
+  def reindex_pages
+    Sunspot.index! DocPage.where(["filing_doc_id = :filing_doc_id AND pagenumber between :start_page AND :end_page", params.slice(:filing_doc_id, :start_page, :end_page)])
   end
 end
