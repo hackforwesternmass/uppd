@@ -16,3 +16,4 @@
 /solr/data/*
 *~
 *.pyc
+vendor/bundle
