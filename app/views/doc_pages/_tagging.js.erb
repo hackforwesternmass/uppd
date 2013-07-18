@@ -14,6 +14,14 @@ Tagging.prototype.initialize = function(data) {
   });
 
   this.tags = tags;
+
+  $("#ubersave button").click(function() {
+    $.each(this.tags, function(_, tag) {
+      if (tag.state == "edit") {
+        tag.state_panel().find("button.save").click();
+      }
+    });
+  }.bind(this));
 }
 
 Tagging.prototype.advance = function(pagenumber, direction) {

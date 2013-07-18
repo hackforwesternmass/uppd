@@ -15,8 +15,8 @@
     <img id="pagecontent" src="<%= page_url(@doc_page) %>" />
   </div>
   <div class="large-4 columns">
-    <%= render "tag.js.erb" %>
-    <%= render "tagging.js.erb" %>
+    <%= render "tag.js" %>
+    <%= render "tagging.js" %>
     <% @doc_page.document_tags.each do |tag| %>
       <fieldset class="tagging">
         <legend><%= tag.context %></legend>
@@ -26,35 +26,34 @@
         </div>
 
         <div id="<%= tag.dom_id('show') %>" style="display: none;">
-          <div>Name: <span class="name" /></div> 
-          <div>Start Page: <span class="start_page" /></div>
-          <div>End Page: <span class="end_page" /></div>
+          <div class="tag-label">Name: <span class="name" /></div> 
+          <div class="tag-label">Start Page: <span class="start_page" /></div>
+          <div class="tag-label">End Page: <span class="end_page" /></div>
           <div>
-            <button class="edit">Edit</button>
-            <button class="delete">Delete</button>
+            <button class="tiny button edit">Edit</button>
+            <button class="tiny button delete">Delete</button>
           </div>
         </div>
 
         <div id="<%= tag.dom_id('edit') %>" style="display: none;">
-          <div>Name: 
+          <div class="tag-label">Name: 
             <%= select_tag tag.dom_id('edit_tag_id'), options_from_collection_for_select(Tag.where(:context => tag.context), "id", "name"), :title => "Choose new tag" %>
           </div>
-          <div>Start Page: <span class="start_page" /></div>
-          <div>End Page: <span class="end_page" /></div>
+          <div class="tag-label">Start Page: <input type="number" id="<%= tag.dom_id('start_page') %>" min="1" max="<%= @doc_page.filing_doc.pagecount %>" /></div>
+          <div class="tag-label">End Page: <input type="number" id="<%= tag.dom_id('end_page') %>" min="1" max="<%= @doc_page.filing_doc.pagecount %>" /></div>
           <div>
-            <button class="save">Save</button>
-            <button class="cancel">Cancel</button>
+            <button class="tiny button save">Save</button>
+            <button class="tiny button cancel">Cancel</button>
           </div>
         </div>
-
       </fieldset>
       <% end %>
-      <%= render "tagging.initialize.js.erb" %>
-    </div>
+      <%= render "tagging.initialize.js" %>
+      <div class="pager" id="page_navigation">
+        <%= page_navigation(@doc_page) %>
+        <div id="ubersave" style="display: none;">
+          <button class="tiny button save">Save All</button>
+        </div>
+      </div>
   </div>
-
-<div class="row doc-page">
-    <div class="row pager" id="page_navigation">
-        <%= page_navigation(@doc_page) %>  
-    </div>
-  </div>
+</div>

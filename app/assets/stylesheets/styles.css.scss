@@ -106,11 +106,6 @@ div.result-block {
    
   font-size: 1.25em;
 
-   .element {
-       background-color: #e1e1e1;
-       padding: 3px;
-       cursor: pointer;
-   }
 
    #pagenumber {
        background-color: #21e1e1;
@@ -118,9 +113,8 @@ div.result-block {
 }
 
 .tagging {
-    button {
-        padding: 2px;
-        margin-top: 4px;
-
-    }
+     input[type=number] {
+        display: inline;
+        width: 3em;
+     }
 }

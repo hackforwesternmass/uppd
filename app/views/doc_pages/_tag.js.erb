@@ -55,8 +55,8 @@ Tag.prototype = {
 
     var data = this.data;
 
-    var update_view = function() {
-      this.update_view(this.state, this.state_panel());
+    var enable_action_update_view = function() {
+      actions.push(function() { this.update_view(this.state, this.state_panel()) })
     };
 
     var actions = [];
@@ -66,20 +66,20 @@ Tag.prototype = {
         case "previous":
           if (data.start_page > pagenumber) {
             data.start_page = pagenumber;
-            actions.push(update_view);
+            enable_action_update_view()
           }
           break;
         case "next":
           if (data.end_page < pagenumber) {
             data.end_page = pagenumber;
-            actions.push(update_view);
+            enable_action_update_view()
           }
           break;
       }
     } else {
       this.data = tag_data;
       actions.push(function() { this.reset_state() });
-      actions.push(update_view);
+      enable_action_update_view()
     }
 
     for (var i = 0; i < actions.length; i++) {
@@ -89,16 +89,29 @@ Tag.prototype = {
 
   update_view: function (state, panel) {
     if (state == "show" || state == "edit") {
+
       var data = this.data;
+
       $.each(["name", "start_page", "end_page"], function (_, name) {
-        var item = panel.find("." + name);
+        var item;
+        
+        item = panel.find("." + name);
         if (item.length > 0) {
           item.html(data[name]);
         }
-      });
+
+        item = panel.find(this.dom_id("#" + name));
+        if (item.length > 0) {
+            item.val(data[name]);
+        }
+
+      }.bind(this));
 
       if (state == "edit") {
           panel.find(this.dom_id("#edit_tag_id")).val(data.tag_id);
+          $("#ubersave").show();
+      } else {
+          $("#ubersave").hide();
       }
     }
   },
@@ -158,6 +171,12 @@ Tag.prototype = {
           panel.find(tag.dom_id("#edit_tag_id")).change(function(){
             tag.update_tag_data(this);
           });
+
+          $.each(["start_page", "end_page"], function(_, name) {
+            panel.find(tag.dom_id("#" + name)).change(function() {
+                tag.data[name] = this.value;
+            });
+          }); 
 
         });
 

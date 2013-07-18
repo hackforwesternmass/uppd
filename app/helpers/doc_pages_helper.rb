@@ -88,7 +88,7 @@ module DocPagesHelper
 
     html_options = {
       :id => "pager_#{direction}",
-      :class => ["element #{direction}"],
+      :class => ["tiny button #{direction}"],
       :onclick => "pager.#{direction}()",
     }
 
