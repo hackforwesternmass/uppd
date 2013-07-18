@@ -18,3 +18,11 @@
 //= require_tree .
 
 $(document).foundation();
+
+// re-scope to a specific "this" (or any other) object.
+Function.prototype.bind = function(obj) {
+  var func = this;
+  return function() {
+    return func.apply(obj, arguments);
+  };
+}
