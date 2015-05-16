@@ -52,3 +52,8 @@ http://apps.fcc.gov/ecfs/proceeding/ is a good example of a page the leads to Do
 # Requirements
 
 apt-get install libpq-dev
+
+# Archive
+The original site has been archived.
+The database dump db/archive-2015-05-16.sql.gz and the file
+can be used to bootstrap a new site.
